@@ -170,7 +170,7 @@
                 android:id="@+id/barrierSmall"
                 app:constraint_referenced_ids="ivMenu, ivNew"/>
 
-            <com.example.otchelper.common.ChartView
+            <com.atittoapps.otchelper.common.ChartView
                 android:id="@+id/chart"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -187,7 +187,7 @@
 
         <variable
             name="item"
-            type="com.example.otchelper.companies.CompaniesItems.Stock" />
+            type="com.atittoapps.otchelper.companies.CompaniesItems.Stock" />
     </data>
 
 </layout>

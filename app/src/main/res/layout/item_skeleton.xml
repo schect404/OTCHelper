@@ -6,7 +6,7 @@
 
         <variable
             name="item"
-            type="com.example.otchelper.companies.CompaniesItems.Skeleton" />
+            type="com.atittoapps.otchelper.companies.CompaniesItems.Skeleton" />
     </data>
 
     <androidx.cardview.widget.CardView

@@ -7,7 +7,7 @@
 
         <variable
             name="item"
-            type="com.example.otchelper.filter.Filters.PushesSound" />
+            type="com.atittoapps.otchelper.filter.Filters.PushesSound" />
     </data>
 
         <androidx.constraintlayout.widget.ConstraintLayout

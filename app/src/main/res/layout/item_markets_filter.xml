@@ -7,7 +7,7 @@
 
         <variable
             name="item"
-            type="com.example.otchelper.filter.Filters.ShouldShowRestOfPink" />
+            type="com.atittoapps.otchelper.filter.Filters.ShouldShowRestOfPink" />
     </data>
 
         <androidx.constraintlayout.widget.ConstraintLayout

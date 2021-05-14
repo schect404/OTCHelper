@@ -6,7 +6,7 @@
 
         <variable
             name="item"
-            type="com.example.otchelper.details.reports.sec.ReportsItems.Skeleton" />
+            type="com.atittoapps.otchelper.details.reports.sec.ReportsItems.Skeleton" />
     </data>
 
         <xyz.peridy.shimmerlayout.ShimmerLayout

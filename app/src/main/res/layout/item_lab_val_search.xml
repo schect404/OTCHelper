@@ -39,7 +39,7 @@
 
         <variable
             name="item"
-            type="com.example.otchelper.search.SearchItems.Result" />
+            type="com.atittoapps.otchelper.search.SearchItems.Result" />
     </data>
 
 </layout>

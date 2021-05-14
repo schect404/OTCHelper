@@ -52,7 +52,7 @@
 
         <variable
             name="item"
-            type="com.example.otchelper.common.LabelValue" />
+            type="com.atittoapps.otchelper.common.LabelValue" />
     </data>
 
 </layout>

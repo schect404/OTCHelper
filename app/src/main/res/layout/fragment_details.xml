@@ -26,7 +26,7 @@
                 android:layout_height="match_parent"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
-                <com.example.otchelper.common.BiggerChartView
+                <com.atittoapps.otchelper.common.BiggerChartView
                     android:id="@+id/chart"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
