@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        app:cardCornerRadius="4dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="12dp">
+
+            <ImageView
+                android:id="@+id/ivMenu"
+                isActive="@{item.domainStock.favourite}"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/ic_watchlist"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tvSymbol"
+                app:layout_constraintBottom_toBottomOf="@id/tvSymbol"
+                app:tint="?colorPrimary" />
+
+            <ImageView
+                android:id="@+id/ivNew"
+                android:visibility="gone"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/ic_new"
+               app:layout_constraintEnd_toStartOf="@id/ivMenu"
+                app:layout_constraintTop_toTopOf="@id/tvSymbol"
+                app:layout_constraintBottom_toBottomOf="@id/tvSymbol"
+                app:tint="?colorPrimary" />
+
+            <LinearLayout
+                android:id="@+id/valuesContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:orientation="horizontal"
+                app:layout_constraintTop_toBottomOf="@id/barrier">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="@string/auth_out" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="@{item.domainStock.authOut}"
+                        android:textSize="18sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="@string/prev_close" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        doubleValue="@{item.domainStock.previousClose}"
+                        android:textSize="18sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="@string/opening" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        doubleValue="@{item.domainStock.openingPrice}"
+                        android:textSize="18sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="@string/last_sale" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        doubleValue="@{item.domainStock.lastSale}"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvSymbol"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="1dp"
+                android:layout_marginEnd="2dp"
+                fromHtml="@{item.domainStock.makeWatchlistTitleString()}"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toStartOf="@id/barrierSmall"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvIsPriceGood"
+                android:layout_width="0dp"
+                visibleIfOrGone="@{item.domainStock.fromLastMax != null}"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="1dp"
+                app:layout_constraintEnd_toStartOf="@id/barrierSmall"
+                lastMax="@{item.domainStock.fromLastMax}"
+                android:textSize="14sp"
+                android:textColor="?attr/colorGood"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvSymbol" />
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrier"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="tvIsPriceGood, tvSymbol, ivMenu" />
+
+            <androidx.constraintlayout.widget.Barrier
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="start"
+                android:id="@+id/barrierSmall"
+                app:constraint_referenced_ids="ivMenu, ivNew"/>
+
+            <com.example.otchelper.common.ChartView
+                android:id="@+id/chart"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                historicalData="@{item.domainStock.historicalData}"
+                android:minHeight="56dp"
+                app:layout_constraintTop_toBottomOf="@id/valuesContainer"
+                android:layout_marginTop="2dp"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <data>
+
+        <variable
+            name="item"
+            type="com.example.otchelper.companies.CompaniesItems.Stock" />
+    </data>
+
+</layout>

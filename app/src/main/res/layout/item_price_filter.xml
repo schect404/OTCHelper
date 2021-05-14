@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="item"
+            type="com.example.otchelper.filter.Filters.Price" />
+    </data>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="4dp"
+            android:layout_marginHorizontal="12dp">
+
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@{item.title}"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:textStyle="bold"
+                android:textSize="18sp"/>
+
+            <TextView
+                android:id="@+id/tvFromLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@id/etFrom"
+                app:layout_constraintBottom_toBottomOf="@id/etFrom"
+                app:layout_constraintStart_toStartOf="parent"
+                android:text="@string/from"
+                android:textSize="14sp"/>
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etFrom"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/tvTitle"
+                app:layout_constraintStart_toEndOf="@id/tvFromLabel"
+                app:layout_constraintEnd_toEndOf="@id/guideline"
+                android:layout_marginEnd="4dp"
+                android:layout_marginStart="4dp"
+                android:textSize="16sp"
+                android:digits="0123456789.,"
+                android:inputType="numberDecimal"
+                android:text="@{item.range.minText}"
+                android:hint="0.000"/>
+
+            <TextView
+                android:id="@+id/tvToLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@id/etTo"
+                app:layout_constraintBottom_toBottomOf="@id/etTo"
+                app:layout_constraintStart_toStartOf="@id/guideline"
+                android:text="@string/to"
+                android:textSize="14sp"/>
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etTo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/tvTitle"
+                app:layout_constraintStart_toEndOf="@id/tvToLabel"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="4dp"
+                android:layout_marginStart="4dp"
+                android:text="@{item.range.maxText}"
+                android:hint="0.000"
+                android:digits="0123456789.,"
+                android:inputType="numberDecimal"
+                android:textSize="16sp" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.5" />
+
+            <TextView
+                android:id="@+id/error"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/invalid_data"
+                visibleIfOrGone="@{item.isError}"
+                app:layout_constraintTop_toBottomOf="@id/etFrom"
+                android:textColor="?colorAlert"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

@@ -1,0 +1,122 @@
+ext.deps = [:]
+def versions = [:]
+
+def deps = [:]
+
+//region Modules
+def appmodules = [:]
+appmodules.domain = project(':domain')
+appmodules.data = project(':data')
+ext.appmodules = appmodules
+//endregion
+
+//region AndroidX
+versions.androidx = "1.0.0"
+
+def androidx = [:]
+androidx.appcompat = "androidx.appcompat:appcompat:1.1.0"
+androidx.design = "com.google.android.material:material:1.2.0-alpha04"
+androidx.v4 = "androidx.legacy:legacy-support-v4:${versions.androidx}"
+androidx.constraint = 'androidx.constraintlayout:constraintlayout:1.1.3'
+androidx.emoji = "androidx.emoji:emoji:${versions.androidx}"
+androidx.multidex = 'androidx.multidex:multidex:2.0.1'
+androidx.cardview = "androidx.cardview:cardview:${versions.androidx}"
+ext.androidx = androidx
+//endregion
+
+//region Build
+def build_versions = [:]
+build_versions.min_sdk = 19
+build_versions.target_sdk = 28
+build_versions.compile_sdk = 28
+build_versions.build_tools = "29.0.0"
+ext.build_versions = build_versions
+//endregion
+
+//region Dimens
+versions.dimens = "1.0.6"
+
+def dimens = [:]
+dimens.sdp = "com.intuit.sdp:sdp-android:${versions.dimens}"
+dimens.ssp = "com.intuit.ssp:ssp-android:${versions.dimens}"
+ext.dimens = dimens
+//endregion
+
+//region Retrofit
+versions.retrofit = "2.6.1"
+
+def retrofit = [:]
+retrofit.retrofit =   "com.squareup.retrofit2:retrofit:${versions.retrofit}"
+retrofit.gson =       "com.squareup.retrofit2:converter-gson:$versions.retrofit"
+ext.retrofit = retrofit
+//endregion
+
+//region Images
+def images = [:]
+images.glide = 'com.github.bumptech.glide:glide:4.9.0'
+images.universalloader = 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
+images.circleiv = 'de.hdodenhof:circleimageview:3.0.0'
+ext.images = images
+//endregion
+
+//region Room
+versions.room = '2.2.6'
+
+def room = [:]
+room.room = "androidx.room:room-runtime:${versions.room}"
+room.rxroom = "androidx.room:room-rxjava2:$versions.room"
+room.compiler = "androidx.room:room-compiler:$versions.room"
+room.coroutines = "androidx.room:room-ktx:${versions.room}"
+ext.room = room
+//endregion
+
+//region Coroutines
+def coroutines = [:]
+coroutines.core = 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.6'
+coroutines.android = 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.6'
+ext.coroutines = coroutines
+//endregion
+
+//region OkHttp
+def okhttp = [:]
+okhttp.logging = 'com.squareup.okhttp3:logging-interceptor:3.12.8'
+okhttp.gson = 'com.google.code.gson:gson:2.8.5'
+okhttp.okhttp = 'com.squareup.okhttp3:okhttp:3.12.8'
+ext.okhttp = okhttp
+//endregion
+
+//region Koin
+versions.koin = "2.2.1"
+
+def koin = [:]
+koin.koin = "org.koin:koin-android:${versions.koin}"
+koin.viewmodel = "org.koin:koin-androidx-viewmodel:${versions.koin}"
+ext.koin = koin
+//endregion
+
+//region Google services
+def google = [:]
+google.firebase = 'com.google.firebase:firebase-common:19.3.0'
+google.firebaseDynamicLinks = 'com.google.firebase:firebase-dynamic-links:19.1.0'
+google.firebaseAnalytics = 'com.google.firebase:firebase-analytics:17.3.0'
+google.vision = 'com.google.android.gms:play-services-vision:19.0.0'
+google.tappay = 'com.google.android.gms:play-services-tapandpay:16.0.2'
+google.location = 'com.google.android.gms:play-services-location:17.0.0'
+google.maps = 'com.google.android.gms:play-services-maps:17.0.0'
+ext.google = google
+//endregion
+
+//region Lifecycle
+versions.lifecycle = '2.3.0-alpha05'
+def lifecycle = [:]
+lifecycle.vmScope = "androidx.lifecycle:lifecycle-viewmodel-ktx:${versions.lifecycle}"
+lifecycle.lcScope = "androidx.lifecycle:lifecycle-runtime-ktx:${versions.lifecycle}"
+ext.lifecycle = lifecycle
+//endregion
+
+deps.shimmer = 'xyz.peridy.shimmer:shimmerlayout:1.1'
+deps.lastAdapter = 'com.github.nitrico.lastadapter:lastadapter:2.3.0'
+
+ext.deps = deps
+
+ext.versions = versions
