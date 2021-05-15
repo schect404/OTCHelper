@@ -10,11 +10,7 @@ import com.atittoapps.data.companies.model.toDbStock
 import com.atittoapps.data.companies.model.toWatchlist
 import com.atittoapps.data.prefs.SharedPrefsProvider
 import com.atittoapps.domain.companies.CompaniesRepository
-import com.atittoapps.domain.companies.model.DomainFilters
-import com.atittoapps.domain.companies.model.DomainOtcNews
-import com.atittoapps.domain.companies.model.DomainSecReport
-import com.atittoapps.domain.companies.model.DomainStock
-import com.atittoapps.domain.companies.model.DomainSymbols
+import com.atittoapps.domain.companies.model.*
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.delayEach
@@ -179,6 +175,7 @@ class CompaniesRepositoryImpl(
                     marketCap = profile?.estimatedMarketCap,
                     estimatedMarketCapAsOfDate = profile?.estimatedMarketCapAsOfDate,
                     isFavourite = favourites.firstOrNull { it.symbol == stock.symbol } != null,
+                    officers = profile.officers?.map { DomainOfficer(it.name, it.title) } ?: listOf(),
                     isNew = (old.firstOrNull { it.symbol == stock.symbol } == null) || (old.firstOrNull { it.symbol == stock.symbol }?.isNew == true)
                 )
             )
@@ -278,7 +275,8 @@ class CompaniesRepositoryImpl(
     }
 
     override fun getCompanyProfile(symbols: DomainSymbols) = flow {
-        emit(DomainStock(symbol = symbols.ticker, securityName = symbols.fullName))
+        val favourites = stocksDao.getFullWatchlist().map { it.toDomain() }
+        emit(DomainStock(symbol = symbols.ticker, securityName = symbols.fullName, isFavourite = favourites.firstOrNull { it.symbol == symbols.ticker } != null ))
     }.flatMapConcat {
         getCompanyFullProfile(listOf(it)).map { it.firstOrNull() }.filterNotNull()
     }.flatMapConcat { stock ->

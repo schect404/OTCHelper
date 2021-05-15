@@ -7,7 +7,7 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
+        android:layout_margin="4dp"
         app:cardCornerRadius="4dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -124,17 +124,29 @@
             </LinearLayout>
 
             <TextView
-                android:id="@+id/tvIsPriceGood"
-                visibleIfOrGone="@{item.priceGood}"
+                android:id="@+id/tvIndustry"
                 android:layout_width="0dp"
+                visibleIfOrGone="@{item.industry != null}"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="1dp"
-                android:text="@string/price_is_lower_than_half_of_annual_average"
-                android:textColor="?colorGood"
-                android:textSize="14sp"
                 app:layout_constraintEnd_toStartOf="@id/ivAlarm"
+                android:text="@{item.industry}"
+                android:textSize="14sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvSymbol" />
+
+            <TextView
+                android:id="@+id/tvIsPriceGood"
+                android:layout_width="0dp"
+                visibleIfOrGone="@{item.fromLastMax != null}"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="1dp"
+                app:layout_constraintEnd_toStartOf="@id/ivAlarm"
+                lastMax="@{item.fromLastMax}"
+                android:textSize="14sp"
+                android:textColor="?attr/colorGood"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvIndustry" />
 
             <TextView
                 android:id="@+id/tvSymbol"

@@ -37,7 +37,7 @@ class CompanySecurityDetailsFragment : SimpleFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.rvDetails.attachAdapter(adapter)
-        items.update(stock?.toSecuritiesList() ?: listOf())
+        items.update(stock?.toSecuritiesList(requireContext()) ?: listOf())
     }
 
     companion object {

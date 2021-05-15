@@ -12,12 +12,15 @@ import androidx.core.app.NotificationCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.atittoapps.domain.companies.CompaniesInteractor
+import com.atittoapps.domain.companies.model.DomainStock
 import com.atittoapps.otchelper.MainActivity
 import com.atittoapps.otchelper.R
+import com.atittoapps.otchelper.companies.CompaniesBinding
 import kotlinx.coroutines.flow.first
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
+import java.text.DecimalFormat
 
 @KoinApiExtension
 class FetcherWorker(val appContext: Context, workerParams: WorkerParameters) :
@@ -25,12 +28,14 @@ class FetcherWorker(val appContext: Context, workerParams: WorkerParameters) :
 
     private val interactor: CompaniesInteractor = get()
 
+    private val format = DecimalFormat("##0.####")
+
     override suspend fun doWork(): Result {
         createNotificationChannel()
         return try {
             startTask()
             val favourites = interactor.getWatchlist(false).first()
-            if (favourites.firstOrNull { it.isPriceChanged } != null) notifyAboutChanges()
+            if(!favourites.isNullOrEmpty()) notifyAboutChanges(favourites)
             Result.success()
         } catch (e: Exception) {
             Result.failure()
@@ -77,7 +82,10 @@ class FetcherWorker(val appContext: Context, workerParams: WorkerParameters) :
                 .setContentText(appContext.getString(R.string.started_fetching))
                 .setContentIntent(makePendingIntent())
                 .apply {
-                    if(!vibrationEnabled) setSound(null)
+                    if(!vibrationEnabled) {
+                        setNotificationSilent()
+                        setSound(null)
+                    }
                 }
         }
 
@@ -85,10 +93,16 @@ class FetcherWorker(val appContext: Context, workerParams: WorkerParameters) :
         notificationManager.notify( /*notification id*/1, notificationBuilder.build())
     }
 
-    private fun notifyAboutChanges() {
+    private fun notifyAboutChanges(watchlist: List<DomainStock>) {
         val vibrationEnabled = interactor.getFilters().shouldPushesSound
         val notificationManager =
             appContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        var string = ""
+
+        watchlist.forEach {
+            string += "${it.symbol} ${it.lastSale?.let { format.format(it).replace(",", ".") }} \n"
+        }
 
         val notificationBuilder =
             NotificationCompat.Builder(applicationContext, NOTIFICATION_CHANNEL_ID)
@@ -98,11 +112,16 @@ class FetcherWorker(val appContext: Context, workerParams: WorkerParameters) :
                 .setDefaults(Notification.DEFAULT_ALL)
                 .setSmallIcon(android.R.drawable.ic_notification_overlay)
                 .setPriority(NotificationCompat.PRIORITY_MAX)
+                    .setStyle(NotificationCompat.BigTextStyle().bigText(string))
                 .setContentTitle(appContext.getString(R.string.stocks_filter))
-                .setContentText(appContext.getString(R.string.price_changed))
+                .setContentText(string)
+
                 .setContentIntent(makePendingIntent())
                 .apply {
-                    if(!vibrationEnabled) setSound(null)
+                    if(!vibrationEnabled) {
+                        setSound(null)
+                        setNotificationSilent()
+                    }
                 }
         }
         notificationManager.notify( /*notification id*/2, notificationBuilder.build())

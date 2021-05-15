@@ -22,5 +22,7 @@ data class CompanyDetails(
     @SerializedName("estimatedMarketCap")
     val estimatedMarketCap: Double? = null,
     @SerializedName("estimatedMarketCapAsOfDate")
-    val estimatedMarketCapAsOfDate: Long? = null
+    val estimatedMarketCapAsOfDate: Long? = null,
+    @SerializedName("officers")
+    val officers: List<DataOfficer>? = null
 )

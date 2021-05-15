@@ -37,7 +37,7 @@ class CompanyProfileFragment : SimpleFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.rvDetails.attachAdapter(adapter)
-        items.update(stock?.toInfoList() ?: listOf())
+        items.update(stock?.toInfoList(requireContext()) ?: listOf())
     }
 
     companion object {

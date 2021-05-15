@@ -37,7 +37,7 @@ class LinksFragment : SimpleFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.rvDetails.attachAdapter(adapter)
-        items.update(stock?.toLinksList() ?: listOf())
+        items.update(stock?.toLinksList(requireContext()) ?: listOf())
     }
 
     companion object {

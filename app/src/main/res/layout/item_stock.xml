@@ -144,6 +144,18 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
+                android:id="@+id/tvIndustry"
+                android:layout_width="0dp"
+                visibleIfOrGone="@{item.domainStock.industry != null}"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="1dp"
+                app:layout_constraintEnd_toStartOf="@id/barrierSmall"
+                android:text="@{item.domainStock.industry}"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvSymbol" />
+
+            <TextView
                 android:id="@+id/tvIsPriceGood"
                 android:layout_width="0dp"
                 visibleIfOrGone="@{item.domainStock.fromLastMax != null}"
@@ -154,7 +166,7 @@
                 android:textSize="14sp"
                 android:textColor="?attr/colorGood"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvSymbol" />
+                app:layout_constraintTop_toBottomOf="@id/tvIndustry" />
 
             <androidx.constraintlayout.widget.Barrier
                 android:id="@+id/barrier"

@@ -1,7 +1,9 @@
 package com.atittoapps.otchelper.common
 
+import android.content.Context
 import android.os.Parcelable
 import androidx.annotation.StringRes
+import com.atittoapps.domain.companies.model.DomainOfficer
 import com.atittoapps.domain.companies.model.DomainStock
 import com.atittoapps.domain.companies.model.HistoricalDataItem
 import com.atittoapps.otchelper.R
@@ -28,6 +30,18 @@ data class HistoricalDataItemParcelable(
 fun HistoricalDataItem.toParcel() = HistoricalDataItemParcelable(
     open, close, high, low, volume
 )
+
+@Parcelize
+data class AppOfficer(
+    val name: String?,
+    val title: String?
+): Parcelable {
+
+    fun toDomain() = DomainOfficer(name, title)
+
+}
+
+fun DomainOfficer.toApp() = AppOfficer(name, title)
 
 @Parcelize
 data class DomainStockParcelable(
@@ -72,7 +86,8 @@ data class DomainStockParcelable(
     val numberOfEmployees: String?,
     val industry: String?,
     val marketCap: Double?,
-    val estimatedMarketCapAsOfDate: Long? = null
+    val estimatedMarketCapAsOfDate: Long? = null,
+    val officers: List<AppOfficer> = listOf()
 ) : Parcelable {
 
     fun toDomain() = DomainStock(
@@ -117,7 +132,8 @@ data class DomainStockParcelable(
         numberOfEmployees,
         industry,
         marketCap,
-        estimatedMarketCapAsOfDate
+        estimatedMarketCapAsOfDate,
+        officers.map { it.toDomain() }
     )
 
 }
@@ -164,38 +180,43 @@ fun DomainStock.toParcel() = DomainStockParcelable(
     numberOfEmployees,
     industry,
     marketCap,
-    estimatedMarketCapAsOfDate
+    estimatedMarketCapAsOfDate,
+    officers.map { it.toApp() }
 )
 
 data class LabelValue(
-    @StringRes val label: Int,
+    val label: String,
     val value: String?,
     val addedInfo: String? = null
 )
 
-fun DomainStock.toInfoList() = arrayListOf<LabelValue>().apply {
-    name?.let { add(LabelValue(R.string.name, it)) }
-    industry?.let { add(LabelValue(R.string.industry, it)) }
-    businessDesc?.let { add(LabelValue(R.string.description, it)) }
-    numberOfEmployees?.let { add(LabelValue(R.string.number_of_employees, it)) }
-    country?.let { add(LabelValue(R.string.country, it)) }
-    city?.let { add(LabelValue(R.string.city, it)) }
-    website?.let { add(LabelValue(R.string.website, it)) }
-    email?.let { add(LabelValue(R.string.email, it)) }
+fun DomainStock.toInfoList(context: Context) = arrayListOf<LabelValue>().apply {
+    name?.let { add(LabelValue(context.getString(R.string.name), it)) }
+    industry?.let { add(LabelValue(context.getString(R.string.industry), it)) }
+    businessDesc?.let { add(LabelValue(context.getString(R.string.description), it)) }
+    numberOfEmployees?.let { add(LabelValue(context.getString(R.string.number_of_employees), it)) }
+    officers.forEach {
+        add(LabelValue(it.title ?: "", it.name))
+    }
+    country?.let { add(LabelValue(context.getString(R.string.country), it)) }
+    city?.let { add(LabelValue(context.getString(R.string.city), it)) }
+    website?.let { add(LabelValue(context.getString(R.string.website), it)) }
+    email?.let { add(LabelValue(context.getString(R.string.email), it)) }
+
 }
 
-fun DomainStock.toLinksList() = arrayListOf<LabelValue>().apply {
-    symbol?.let { add(LabelValue(R.string.twitter, "https://twitter.com/search?q=%24${it.toLowerCase()}&src=typed_query&f=live")) }
-    symbol?.let { add(LabelValue(R.string.reddit, "https://www.reddit.com/search/?q=%23${it}&sort=new")) }
-    symbol?.let { add(LabelValue(R.string.stocktwits, "https://stocktwits.com/symbol/${it}")) }
+fun DomainStock.toLinksList(context: Context) = arrayListOf<LabelValue>().apply {
+    symbol?.let { add(LabelValue(context.getString(R.string.twitter), "https://twitter.com/search?q=%24${it.toLowerCase()}&src=typed_query&f=live")) }
+    symbol?.let { add(LabelValue(context.getString(R.string.reddit), "https://www.reddit.com/search/?q=%23${it}&sort=new")) }
+    symbol?.let { add(LabelValue(context.getString(R.string.stocktwits), "https://stocktwits.com/symbol/${it}")) }
 }
 
-fun DomainStock.toSecuritiesList() = arrayListOf<LabelValue>().apply {
-    marketCap?.let { add(LabelValue(R.string.market_cap, it.getWithDelimiters(0), estimatedMarketCapAsOfDate.getDateString()?.let { "(%s)".format(it) })) }
+fun DomainStock.toSecuritiesList(context: Context) = arrayListOf<LabelValue>().apply {
+    marketCap?.let { add(LabelValue(context.getString(R.string.market_cap), it.getWithDelimiters(0), estimatedMarketCapAsOfDate.getDateString()?.let { "(%s)".format(it) })) }
     authorisedShares?.let {
         add(
             LabelValue(
-                R.string.authorised,
+                context.getString(R.string.authorised),
                 it.toDouble().getWithDelimiters(0),
                 authorisedSharesAsOfDate.getDateString()?.let { "(%s)".format(it) }
             )
@@ -204,7 +225,7 @@ fun DomainStock.toSecuritiesList() = arrayListOf<LabelValue>().apply {
     outstandingShares?.let {
         add(
             LabelValue(
-                R.string.outstanding,
+                context.getString(R.string.outstanding),
                 it.toDouble().getWithDelimiters(0),
                 outstandingSharesAsOfDate.getDateString()?.let { "(%s)".format(it) }
             )
@@ -213,7 +234,7 @@ fun DomainStock.toSecuritiesList() = arrayListOf<LabelValue>().apply {
     restrictedShares?.let {
         add(
             LabelValue(
-                R.string.restricted,
+                context.getString(R.string.restricted),
                 it.toDouble().getWithDelimiters(0),
                 restrictedSharesAsOfDate.getDateString()?.let { "(%s)".format(it) }
             )
@@ -222,7 +243,7 @@ fun DomainStock.toSecuritiesList() = arrayListOf<LabelValue>().apply {
     unrestrictedShares?.let {
         add(
             LabelValue(
-                R.string.unrestricted,
+                context.getString(R.string.unrestricted),
                 it.toDouble().getWithDelimiters(0),
                 unrestrictedSharesAsOfDate.getDateString()?.let { "(%s)".format(it) }
             )
@@ -232,7 +253,7 @@ fun DomainStock.toSecuritiesList() = arrayListOf<LabelValue>().apply {
     dtcShares?.let {
         add(
             LabelValue(
-                R.string.dtc,
+                context.getString(R.string.dtc),
                 it.toDouble().getWithDelimiters(0),
                 dtcSharesAsOfDate.getDateString()?.let { "(%s)".format(it) }
             )
@@ -241,7 +262,7 @@ fun DomainStock.toSecuritiesList() = arrayListOf<LabelValue>().apply {
     publicFloat?.let {
         add(
             LabelValue(
-                R.string.float_shares,
+                context.getString(R.string.float_shares),
                 it.toDouble().getWithDelimiters(0),
                 publicFloatAsOfDate.getDateString()?.let { "(%s)".format(it) }
             )
@@ -250,7 +271,7 @@ fun DomainStock.toSecuritiesList() = arrayListOf<LabelValue>().apply {
     parValue?.let {
         add(
             LabelValue(
-                R.string.parvalue,
+                context.getString(R.string.parvalue),
                 it.getWithDelimiters(4)
             )
         )
