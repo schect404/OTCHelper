@@ -76,6 +76,18 @@ class CompaniesRepositoryImpl(
                         previousClose = inside.previousClose,
                         historicalData = historicalData.historicalData
                     )
+                }.flatMapConcat {
+                    getSecReports(stock).zip(getOtcReports(stock)) { secReps, otcReps ->
+                        val now = Calendar.getInstance().timeInMillis
+                        val edgeTime: Long = now - (1000L * 3600L * 24L * 30L * 3L)
+                        val areNewSec =
+                            secReps.firstOrNull { it.receivedDate ?: 0 >= edgeTime } != null
+                        val areNewOtc =
+                            otcReps.firstOrNull { it.receivedDate ?: 0 >= edgeTime } != null
+                        return@zip it.copy(
+                            currentPossible = (areNewOtc || areNewSec)&&((stock.market == "Pink No Information") || (stock.market == "Pink Limited"))
+                        )
+                    }
                 }.map {
                     val maxFromPrev =
                         if (it.historicalData.size > 2) it.historicalData.subList(

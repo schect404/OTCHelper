@@ -61,4 +61,5 @@
     <string name="start_typing_here">Почніть писати тут...</string>
     <string name="search">Пошук</string>
     <string name="sound_of_notifications">Звук нотифікацій</string>
+    <string name="possible_current">!Possible Current!</string>
 </resources>

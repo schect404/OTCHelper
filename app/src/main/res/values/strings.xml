@@ -61,4 +61,5 @@
     <string name="start_typing_here">Start typing here...</string>
     <string name="search">Search</string>
     <string name="sound_of_notifications">Sound of Notifications</string>
+    <string name="possible_current">!Possible Current!</string>
 </resources>
