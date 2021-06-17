@@ -154,8 +154,20 @@
                 android:textStyle="bold"
                 android:textColor="?attr/colorGood"
                 android:text="@string/possible_current"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvSymbol"/>
+
+            <TextView
+                android:id="@+id/tvIndustry"
+                android:layout_width="0dp"
+                visibleIfOrGone="@{item.domainStock.industry != null}"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="1dp"
+                app:layout_constraintEnd_toStartOf="@id/barrierSmall"
+                android:text="@{item.domainStock.industry}"
+                android:textSize="14sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvSymbol" />
+                app:layout_constraintTop_toBottomOf="@id/tvPossibleCurrent" />
 
             <TextView
                 android:id="@+id/tvIsPriceGood"
@@ -167,7 +179,7 @@
                 lastMax="@{item.domainStock.fromLastMax}"
                 android:textSize="14sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvPossibleCurrent" />
+                app:layout_constraintTop_toBottomOf="@id/tvIndustry" />
 
             <androidx.constraintlayout.widget.Barrier
                 android:id="@+id/barrier"
@@ -183,7 +195,7 @@
                 android:id="@+id/barrierSmall"
                 app:constraint_referenced_ids="ivMenu, ivNew"/>
 
-            <com.example.otchelper.common.ChartView
+            <com.atittoapps.otchelper.common.ChartView
                 android:id="@+id/chart"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -200,7 +212,7 @@
 
         <variable
             name="item"
-            type="com.example.otchelper.companies.CompaniesItems.Stock" />
+            type="com.atittoapps.otchelper.companies.CompaniesItems.Stock" />
     </data>
 
 </layout>

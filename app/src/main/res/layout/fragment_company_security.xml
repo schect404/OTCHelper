@@ -23,7 +23,7 @@
 
         <variable
             name="item"
-            type="com.example.otchelper.details.CompanyDetailsItems.Security" />
+            type="com.atittoapps.otchelper.details.CompanyDetailsItems.Security" />
     </data>
 
 </layout>

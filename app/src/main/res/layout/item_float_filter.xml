@@ -7,7 +7,7 @@
 
         <variable
             name="item"
-            type="com.example.otchelper.filter.Filters.Float" />
+            type="com.atittoapps.otchelper.filter.Filters.Float" />
     </data>
 
         <androidx.constraintlayout.widget.ConstraintLayout

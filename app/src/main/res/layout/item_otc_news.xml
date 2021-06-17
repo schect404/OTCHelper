@@ -52,7 +52,7 @@
 
         <variable
             name="item"
-            type="com.example.otchelper.details.otcnews.OtcNewsItems.News" />
+            type="com.atittoapps.otchelper.details.otcnews.OtcNewsItems.News" />
     </data>
 
 </layout>

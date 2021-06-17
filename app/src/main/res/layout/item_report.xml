@@ -39,7 +39,7 @@
 
         <variable
             name="item"
-            type="com.example.otchelper.details.reports.sec.ReportsItems.Sec" />
+            type="com.atittoapps.otchelper.details.reports.sec.ReportsItems.Sec" />
     </data>
 
 </layout>
