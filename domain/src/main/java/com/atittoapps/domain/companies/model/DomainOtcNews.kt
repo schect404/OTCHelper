@@ -24,6 +24,6 @@ data class DomainOtcNews(
     fun getDate() = createdDate.getDateString()
 }
 
-val formatter = SimpleDateFormat("dd.MM.YYY")
+val formatter = SimpleDateFormat("dd.MM.yyyy")
 
 fun Long?.getDateString() = this?.let { formatter.format(Date(it)) }

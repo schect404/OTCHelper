@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "717628499406",
+    "project_id": "otchelper-abe2b",
+    "storage_bucket": "otchelper-abe2b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:717628499406:android:6eb61e30bfac4ddadbf79f",
+        "android_client_info": {
+          "package_name": "com.atittoapps.otchelper"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "717628499406-60jk45f1o5nra8tkj2j0qipu0c2u86lt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBG-1FqxSehr_hN4ipBZwKbS1rFlbqww9A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "717628499406-60jk45f1o5nra8tkj2j0qipu0c2u86lt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
