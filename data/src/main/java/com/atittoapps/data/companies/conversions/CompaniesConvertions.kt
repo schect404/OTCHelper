@@ -19,6 +19,6 @@ fun Stock.toDomain() =
         market = market,
         securityType = securityType,
         volume = volume,
-        price = price,
+        lastSale = price,
         industry = industry
     )

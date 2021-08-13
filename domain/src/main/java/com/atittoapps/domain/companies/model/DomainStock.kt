@@ -45,8 +45,9 @@ data class DomainStock(
     val industry: String? = null,
     val marketCap: Double? = null,
     val estimatedMarketCapAsOfDate: Long? = null,
-    val currentPossible: Boolean = false,
-    val officers: List<DomainOfficer> = listOf()
+    val officers: List<DomainOfficer> = listOf(),
+    val alreadyLoaded: Boolean = false,
+    val currentPossible: Boolean = false
 ) {
 
     fun getAuthOut(): String {

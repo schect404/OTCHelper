@@ -18,6 +18,8 @@ interface CompaniesInteractor {
 
     fun fetchPage(page: Int): Flow<SharesPage>
 
+    fun getPrimaryFiltered(): Flow<List<DomainStock>>
+
     fun getFilteredCompanies(): Flow<List<DomainStock>>
 
     fun filterCompanies(): Flow<List<DomainStock>>
@@ -43,6 +45,10 @@ interface CompaniesInteractor {
     fun getSymbols(): Flow<List<DomainSymbols>>
 
     fun getCompanyProfile(symbols: DomainSymbols): Flow<DomainStock>
+
+    fun getIsCurrentPossibleBasedOnReports(stock: DomainStock): Flow<DomainStock>
+
+    fun getHistoricalData(stock: DomainStock): Flow<DomainStock>
 }
 
 class CompaniesInteractorImpl(
@@ -52,6 +58,16 @@ class CompaniesInteractorImpl(
     override fun fetchPage(page: Int) =
         companiesRepository.fetchPage(page)
             .map { it.copy(shares = it.shares.sortedBy { it.lastSale }) }
+
+    override fun getPrimaryFiltered() = companiesRepository.getPrimaryFiltered().map {
+        it.sortedBy { it.lastSale }
+    }
+
+    override fun getHistoricalData(stock: DomainStock) =
+        companiesRepository.getHistoricalData(stock)
+
+    override fun getIsCurrentPossibleBasedOnReports(stock: DomainStock) =
+        companiesRepository.getIsCurrentPossibleBasedOnReports(stock)
 
     override fun filterCompanies() =
         companiesRepository.filterCompanies()

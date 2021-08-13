@@ -12,6 +12,8 @@ interface CompaniesRepository {
 
     fun fetchPage(page: Int): Flow<SharesPage>
 
+    fun getPrimaryFiltered(): Flow<List<DomainStock>>
+
     fun getFilteredCompanies(): Flow<List<DomainStock>>
 
     fun filterCompanies(): Flow<List<DomainStock>>
@@ -23,6 +25,8 @@ interface CompaniesRepository {
     fun getSecReports(stock: DomainStock): Flow<List<DomainSecReport>>
 
     fun getOtcReports(stock: DomainStock): Flow<List<DomainSecReport>>
+
+    fun getIsCurrentPossibleBasedOnReports(stock: DomainStock): Flow<DomainStock>
 
     fun getCompaniesInside(stock: DomainStock): Flow<DomainStock>
 

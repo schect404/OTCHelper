@@ -5,7 +5,9 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.atittoapps.data.companies.model.DbHistoricalData
 import com.atittoapps.data.companies.model.DbStock
+import com.atittoapps.data.companies.model.HistoricalData
 import com.atittoapps.data.companies.model.WatchlistStock
 
 @Dao
@@ -34,4 +36,10 @@ interface StocksDao {
 
     @Delete
     suspend fun removeFromWatchlist(watchlistStock: WatchlistStock)
+
+    @Query("SELECT * FROM historicalData WHERE symbol = :symbol")
+    suspend fun getHistoricalData(symbol: String): List<DbHistoricalData>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun addToHistoricalData(historicalData: DbHistoricalData)
 }

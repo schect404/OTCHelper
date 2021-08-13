@@ -87,7 +87,9 @@ data class DomainStockParcelable(
     val industry: String?,
     val marketCap: Double?,
     val estimatedMarketCapAsOfDate: Long? = null,
-    val officers: List<AppOfficer> = listOf()
+    val officers: List<AppOfficer> = listOf(),
+    val alreadyLoaded: Boolean,
+    val currentPossible: Boolean
 ) : Parcelable {
 
     fun toDomain() = DomainStock(
@@ -133,7 +135,9 @@ data class DomainStockParcelable(
         industry,
         marketCap,
         estimatedMarketCapAsOfDate,
-        officers.map { it.toDomain() }
+        officers.map { it.toDomain() },
+        alreadyLoaded,
+        currentPossible
     )
 
 }
@@ -181,7 +185,9 @@ fun DomainStock.toParcel() = DomainStockParcelable(
     industry,
     marketCap,
     estimatedMarketCapAsOfDate,
-    officers.map { it.toApp() }
+    officers.map { it.toApp() },
+    alreadyLoaded,
+    currentPossible
 )
 
 data class LabelValue(

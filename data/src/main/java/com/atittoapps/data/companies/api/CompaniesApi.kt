@@ -20,8 +20,7 @@ interface CompaniesApi {
         @Query("priceMin") priceMin: Double?,
         @Query("priceMax") priceMax: Double?,
         @Query("volMin") volMin: Long?,
-        @Query("market") market: String,
-        @Query("page") page: Int = 0
+        @Query("market") market: String
     ): String
 
     @GET(NetworkContract.SYMBOLS)

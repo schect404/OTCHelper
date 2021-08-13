@@ -3,9 +3,12 @@ package com.atittoapps.otchelper.companies
 import com.atitto.mviflowarch.base.BaseActor
 import com.atittoapps.data.prefs.SharedPrefsProvider
 import com.atittoapps.domain.companies.CompaniesInteractor
+import com.atittoapps.domain.companies.model.DomainStock
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
@@ -13,6 +16,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.zip
 
 class CompaniesActor(
     private val interactor: CompaniesInteractor,
@@ -27,7 +31,8 @@ class CompaniesActor(
             .flatMapConcat {
                 val page = viewState?.value?.nextPage
                 if (page == null) flowOf(CompaniesContract.PartialChange.RemoveSkeleton)
-                else if(viewState?.value?.items?.filter { it is CompaniesItems.Skeleton }?.isEmpty() == false) flowOf(CompaniesContract.PartialChange.Stub)
+                else if (viewState?.value?.items?.filter { it is CompaniesItems.Skeleton }
+                        ?.isEmpty() == false) flowOf(CompaniesContract.PartialChange.Stub)
                 else
                     flow<CompaniesContract.PartialChange> {
 
@@ -46,6 +51,26 @@ class CompaniesActor(
                     }
             }
 
+        val primaryFilter = filterIsInstance<CompaniesContract.ViewIntent.InitialFilter>()
+            .flatMapConcat { interactor.getPrimaryFiltered() }
+            .map<List<DomainStock>, CompaniesContract.PartialChange> { CompaniesContract.PartialChange.PrimaryLoaded(it) }
+            .onStart { emit(CompaniesContract.PartialChange.LoadedSkeleton) }
+
+        val loadByItemFlow = filterIsInstance<CompaniesContract.ViewIntent.LoadByFiltered>()
+            .map { it.list.filterNot { it.alreadyLoaded } }
+            .flatMapConcat { stocks ->
+                flow {
+                    stocks.forEach {
+                        val stock = interactor.getHistoricalData(it).zip(interactor.getIsCurrentPossibleBasedOnReports(it)) { stock1, stock2 ->
+                            stock2.copy(historicalData = stock1.historicalData)
+                        }.first()
+                        emit(stock)
+                    }
+                }
+            }.map {
+                CompaniesContract.PartialChange.ItemLoaded(it)
+            }
+
         val addToWatchlistFlow = filterIsInstance<CompaniesContract.ViewIntent.AddToWatchList>()
             .flatMapConcat { interactor.addWatchlist(it.stock).runWithProgress() }
             .map { CompaniesContract.PartialChange.AddedToWatchlist(it) }
@@ -58,7 +83,9 @@ class CompaniesActor(
         return merge(
             initialFlow,
             addToWatchlistFlow,
-            removeFromWatchlistFlow
+            removeFromWatchlistFlow,
+            primaryFilter,
+            loadByItemFlow
         )
     }
 

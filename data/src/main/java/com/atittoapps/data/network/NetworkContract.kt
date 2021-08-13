@@ -4,7 +4,7 @@ object NetworkContract {
 
     const val FULL_COMPANY_PROFILE = "https://backend.otcmarkets.com/otcapi/company/profile/full/{symbol}"
 
-    const val COMPANIES_FILTER = "https://www.otcmarkets.com/research/stock-screener/api?securityType=ADRs,Common%20Stock,Foreign%20Ordinary%20Shares&pageSize=5"
+    const val COMPANIES_FILTER = "https://www.otcmarkets.com/research/stock-screener/api?securityType=ADRs,Common%20Stock,Foreign%20Ordinary%20Shares&pageSize=100000"
 
     const val COMPANY_INSIDE = "https://backend.otcmarkets.com/otcapi/stock/trade/inside/{symbol}"
 

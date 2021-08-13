@@ -66,14 +66,10 @@ class CompaniesFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.rvStocks.attachAdapter(adapter)
-        binding.rvStocks.paging {
-            flow.value = null
-            flow.value = CompaniesContract.ViewIntent.LoadPage
-        }
     }
 
     override fun intents() = merge(
-        flowOf(CompaniesContract.ViewIntent.LoadPage),
+        flowOf(CompaniesContract.ViewIntent.InitialFilter),
         flow.filterNotNull()
     )
 
@@ -87,6 +83,9 @@ class CompaniesFragment :
     override fun render(state: CompaniesContract.ViewState) {
         super.render(state)
         items.update(state.items)
+        if(state.shouldLoad) {
+            flow.value = CompaniesContract.ViewIntent.LoadByFiltered(state.items.filterIsInstance<CompaniesItems.Stock>().map { it.domainStock })
+        }
     }
 
     private fun showToast(text: String) {

@@ -10,6 +10,8 @@ interface CompaniesContract {
 
     sealed class ViewIntent : BaseViewIntent {
 
+        object InitialFilter : ViewIntent()
+        class LoadByFiltered(val list: List<DomainStock>) : ViewIntent()
         object LoadPage : ViewIntent()
         object InitialNotFirst : ViewIntent()
         class AddToWatchList(val stock: DomainStock) : ViewIntent()
@@ -25,7 +27,8 @@ interface CompaniesContract {
     data class ViewState(
         val nextPage: Int? = 0,
         val items: List<CompaniesItems> = listOf(),
-        val progressVisible: Boolean = true
+        val progressVisible: Boolean = true,
+        val shouldLoad: Boolean = false
     ) : BaseViewState
 
     sealed class PartialChange : BasePartialChange<ViewState> {
@@ -36,23 +39,39 @@ interface CompaniesContract {
         ) : PartialChange() {
             override fun reduceToState(initialState: ViewState) =
                 initialState.copy(
-                    items = initialState.items.filterNot { it is CompaniesItems.Skeleton }.toMutableList().apply { addAll(items.map { CompaniesItems.Stock(it) }) },
+                    items = initialState.items.filterNot { it is CompaniesItems.Skeleton }
+                        .toMutableList().apply { addAll(items.map { CompaniesItems.Stock(it) }) },
                     nextPage = page,
                     progressVisible = false
                 )
         }
 
-        object LoadedSkeleton : PartialChange() {
+        class PrimaryLoaded(val items: List<DomainStock>) : PartialChange() {
+            override fun reduceToState(initialState: ViewState) =
+                initialState.copy(items = items.map { CompaniesItems.Stock(it) }, shouldLoad = true)
+        }
+
+        class ItemLoaded(val item: DomainStock) : PartialChange() {
             override fun reduceToState(initialState: ViewState) =
                 initialState.copy(
-                    items = initialState.items.toMutableList()
-                        .apply { addAll(CompaniesItems.Skeleton.createSkeletons()) })
+                    items = initialState.items.map {
+                        if ((it as? CompaniesItems.Stock)?.domainStock?.symbol == item.symbol) CompaniesItems.Stock(
+                            item
+                        ) else it
+                    }, shouldLoad = false
+                )
+        }
+
+        object LoadedSkeleton : PartialChange() {
+            override fun reduceToState(initialState: ViewState) =
+                initialState.copy(items = CompaniesItems.Skeleton.createSkeletons())
         }
 
         object RemoveSkeleton : PartialChange() {
             override fun reduceToState(initialState: ViewState) =
                 initialState.copy(
-                    items = initialState.items.toMutableList().filterNot { it is CompaniesItems.Skeleton })
+                    items = initialState.items.toMutableList()
+                        .filterNot { it is CompaniesItems.Skeleton })
         }
 
         object Stub : PartialChange() {
