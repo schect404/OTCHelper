@@ -133,6 +133,7 @@ data class DomainStockParcelable(
         industry,
         marketCap,
         estimatedMarketCapAsOfDate,
+            false,
         officers.map { it.toDomain() }
     )
 
@@ -282,6 +283,6 @@ fun Double.getWithDelimiters(numAfterPoint: Int = 2): String {
     return "%,.${numAfterPoint}f".format(Locale.FRANCE, this).replace(",", ".")
 }
 
-val formatter = SimpleDateFormat("dd.MM.YYY")
+val formatter = SimpleDateFormat("dd.MM.yyyy")
 
 fun Long?.getDateString() = this?.let { formatter.format(Date(it)) }

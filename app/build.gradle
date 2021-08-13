@@ -1,5 +1,7 @@
 plugins {
     id 'com.android.application'
+    id 'com.google.gms.google-services'
+    id 'com.google.firebase.crashlytics'
     id 'kotlin-android'
     id 'kotlin-kapt'
     id 'kotlin-parcelize'
@@ -13,8 +15,8 @@ android {
         applicationId "com.atittoapps.otchelper"
         minSdkVersion 23
         targetSdkVersion 30
-        versionCode 2
-        versionName "1.0.1"
+        versionCode 5
+        versionName "1.1.2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -53,6 +55,10 @@ dependencies {
     implementation appmodules.data
 
     implementation 'com.github.schect404:MviFlowCore:1.0.2.2'
+
+    implementation platform('com.google.firebase:firebase-bom:28.3.0')
+    implementation 'com.google.firebase:firebase-crashlytics-ktx'
+    implementation 'com.google.firebase:firebase-analytics-ktx'
 
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.0"
     implementation "androidx.lifecycle:lifecycle-common-java8:2.3.0"
