@@ -1,13 +1,6 @@
 package com.atittoapps.data.companies.api
 
-import com.atittoapps.data.companies.model.CompanyDetails
-import com.atittoapps.data.companies.model.CompanyInside
-import com.atittoapps.data.companies.model.DataExternalNewsList
-import com.atittoapps.data.companies.model.DataOtcNewsList
-import com.atittoapps.data.companies.model.DataOtcReports
-import com.atittoapps.data.companies.model.DataSecReports
-import com.atittoapps.data.companies.model.DataSymbols
-import com.atittoapps.data.companies.model.HistoricalData
+import com.atittoapps.data.companies.model.*
 import com.atittoapps.data.network.NetworkContract
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -20,11 +13,16 @@ interface CompaniesApi {
         @Query("priceMin") priceMin: Double?,
         @Query("priceMax") priceMax: Double?,
         @Query("volMin") volMin: Long?,
-        @Query("market") market: String
+        @Query("market") market: String,
+        @Query("industry") industry: String = ""
     ): String
 
     @GET(NetworkContract.SYMBOLS)
     suspend fun getSymbols(): List<DataSymbols>
+
+    @GET(NetworkContract.LEVELS)
+    suspend fun getLevels(@Query("symbol") symbol: String?,
+                          @Query("token") token: String = NetworkContract.getRandomToken()): ApiLevels
 
     @GET(NetworkContract.FULL_COMPANY_PROFILE)
     suspend fun getCompanyFullProfile(

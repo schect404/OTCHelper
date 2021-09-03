@@ -47,8 +47,12 @@ data class DomainStock(
     val estimatedMarketCapAsOfDate: Long? = null,
     val officers: List<DomainOfficer> = listOf(),
     val alreadyLoaded: Boolean = false,
-    val currentPossible: Boolean = false
+    val currentPossible: Boolean = false,
+    val compliantToShareStructureFilter: Boolean = true,
+    val alreadyFiltered: Boolean = false
 ) {
+
+    fun chartCouldNotLoad() = alreadyLoaded && historicalData.isNullOrEmpty()
 
     fun getAuthOut(): String {
         val authNotNull = authorisedShares?.toDouble() ?: return "n/a"
@@ -56,10 +60,16 @@ data class DomainStock(
         return "%s%s".format(((outNotNull / authNotNull)*100).roundToInt(), "%")
     }
 
-    fun isFullyAppropriate(shouldSkipSharesInfo: Boolean, floatRange: DomainRange<Long>) =
+    fun getAuthOutRaw(): Int? {
+        val authNotNull = authorisedShares?.toDouble() ?: return null
+        val outNotNull = outstandingShares?.toDouble() ?: return null
+        return ((outNotNull / authNotNull)*100).roundToInt()
+    }
+
+    fun isFullyAppropriate(shouldSkipSharesInfo: Boolean, floatRange: DomainRange<Long>, sharesRange: DomainRange<Int>, asRange: DomainRange<Long>) =
         isFloatOrDtcAppropriate(shouldSkipSharesInfo, floatRange) && isOutStandingSharesAppropriate(
             shouldSkipSharesInfo
-        )
+        )&&(isSharesRangeAppropriate(shouldSkipSharesInfo, sharesRange))&&(isASRangeAppropriate(shouldSkipSharesInfo, asRange))
 
     fun isPriceAppropriate(): Boolean {
         val annualHighNotNull = annualHigh ?: 0.0
@@ -67,6 +77,20 @@ data class DomainStock(
         val priceNotNull = price ?: 0.0
         val average = (annualHighNotNull + annualLowNotNull) / 2
         return (priceNotNull <= average / 2)
+    }
+
+    fun isSharesRangeAppropriate(shouldSkipSharesInfo: Boolean, sharesRange: DomainRange<Int>): Boolean {
+        val authOut = getAuthOutRaw() ?: return shouldSkipSharesInfo
+        val min = sharesRange.min ?: 0
+        val max = sharesRange.max ?: 100
+        return (authOut >= min )&&(authOut <= max)
+    }
+
+    fun isASRangeAppropriate(shouldSkipSharesInfo: Boolean, asRange: DomainRange<Long>): Boolean {
+        val authOut = authorisedShares ?: return shouldSkipSharesInfo
+        val min = asRange.min ?: 0
+        val max = asRange.max ?: 100
+        return (authOut >= min )&&(authOut <= max)
     }
 
     private fun isFloatOrDtcAppropriate(

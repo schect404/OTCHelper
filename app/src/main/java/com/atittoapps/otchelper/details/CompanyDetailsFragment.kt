@@ -1,5 +1,6 @@
 package com.atittoapps.otchelper.details
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.lifecycleScope
@@ -9,6 +10,7 @@ import com.atittoapps.domain.companies.CompaniesInteractor
 import com.atittoapps.domain.companies.model.DomainStock
 import com.atittoapps.otchelper.R
 import com.atittoapps.otchelper.StubNavigator
+import com.atittoapps.otchelper.chart.ChartActivity
 import com.atittoapps.otchelper.common.DomainStockParcelable
 import com.atittoapps.otchelper.common.toParcel
 import com.atittoapps.otchelper.companies.CompaniesBinding
@@ -36,6 +38,15 @@ class CompanyDetailsFragment : SimpleFragment() {
         stock = arguments?.getParcelable<DomainStockParcelable>(STOCK)?.toDomain()
         val stockNotNull = stock ?: return
         binding.chart.historicalData = stockNotNull.historicalData
+        binding.chart.longClickListener = View.OnLongClickListener {
+            stockNotNull?.let {
+                val intent = Intent(requireContext(), ChartActivity::class.java).apply {
+                    putExtra(ChartActivity.LIST_ITEMS, ArrayList(it.historicalData.map { it.toParcel() }))
+                }
+                requireContext().startActivity(intent)
+            }
+            false
+        }
         binding.tvTicker.text = stockNotNull.symbol
         CompaniesBinding.isActualMoreThanFirst(binding.tvLastPrice, stockNotNull.lastSale)
         binding.tvMarket.text = stockNotNull.market

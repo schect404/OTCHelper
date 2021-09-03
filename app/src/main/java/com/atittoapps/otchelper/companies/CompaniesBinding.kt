@@ -18,6 +18,8 @@ import com.atittoapps.domain.companies.model.HistoricalDataItem
 import com.atittoapps.otchelper.MainApplication
 import com.atittoapps.otchelper.R
 import com.atittoapps.otchelper.common.ChartView
+import com.atittoapps.otchelper.filter.Filters
+import com.crystal.crystalrangeseekbar.widgets.CrystalRangeSeekbar
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.CandleStickChart
 import com.github.mikephil.charting.components.AxisBase
@@ -32,9 +34,16 @@ import com.github.mikephil.charting.data.CandleDataSet
 import com.github.mikephil.charting.data.CandleEntry
 import com.github.mikephil.charting.formatter.IAxisValueFormatter
 import java.text.DecimalFormat
+import java.text.SimpleDateFormat
+import java.util.*
 import kotlin.math.roundToInt
 
 object CompaniesBinding {
+
+    private val formatter = SimpleDateFormat("dd.MM.yyyy")
+
+    fun getDate(date: Long) =
+            formatter.format(Date(date))
 
     @JvmStatic
     @BindingAdapter("visibleIfOrGone")
@@ -215,6 +224,20 @@ object CompaniesBinding {
         val data = BarData(dataset)
         view.data = data
         view.invalidate()
+    }
+
+    @JvmStatic
+    @BindingAdapter("app:range")
+    fun setRange(seekbar: CrystalRangeSeekbar, filter: Filters.RangeShares) {
+        val maxMax = filter.rangeMax.max ?: 100
+        val maxMin = filter.rangeMax.min ?: 0
+        val currentMax = filter.rangeCurrent.max ?: 100
+        val currentMin = filter.rangeCurrent.min ?: 0
+        seekbar.setMaxValue(maxMax.toFloat())
+        seekbar.setMinValue(maxMin.toFloat())
+        seekbar.setMaxStartValue(currentMax.toFloat())
+        seekbar.setMinStartValue(currentMin.toFloat())
+        seekbar.apply()
     }
 
     fun spToPixels(context: Context, spValue: Float): Float {

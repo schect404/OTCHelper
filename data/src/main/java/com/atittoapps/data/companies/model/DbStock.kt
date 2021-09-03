@@ -35,7 +35,9 @@ data class DbStock(
     val dtcShares: Long?,
     val dtcSharesAsOfDate: Long?,
     val parValue: Double?,
-    val estimatedMarketCapAsOfDate: Long?
+    val estimatedMarketCapAsOfDate: Long?,
+    val alreadyLoaded: Boolean?,
+    val alreadyFiltered: Boolean?
 ) {
 
     fun toDomain(gson: Gson) = DomainStock(
@@ -45,10 +47,7 @@ data class DbStock(
         securityType = securityType,
         price = price,
         lastSale = lastSale,
-        historicalData = gson.fromJson(
-            historicalData,
-            HistoricalDataItemWrapper::class.java
-        ).dataItems,
+        historicalData = listOf(),
         isPriceGood = isPriceGood,
         openingPrice = openingPrice,
         previousClose = previousClose,
@@ -67,7 +66,9 @@ data class DbStock(
         unrestrictedShares = unrestrictedShares,
         unrestrictedSharesAsOfDate = unrestrictedSharesAsOfDate,
         parValue = parValue,
-        estimatedMarketCapAsOfDate = estimatedMarketCapAsOfDate
+        estimatedMarketCapAsOfDate = estimatedMarketCapAsOfDate,
+            alreadyLoaded = false,
+            alreadyFiltered = alreadyFiltered ?: false
     )
 }
 
@@ -97,5 +98,7 @@ fun DomainStock.toDbStock(gson: Gson) = DbStock(
     unrestrictedShares = unrestrictedShares,
     unrestrictedSharesAsOfDate = unrestrictedSharesAsOfDate,
     parValue = parValue,
-    estimatedMarketCapAsOfDate = estimatedMarketCapAsOfDate
+    estimatedMarketCapAsOfDate = estimatedMarketCapAsOfDate,
+        alreadyLoaded = alreadyLoaded,
+        alreadyFiltered = alreadyFiltered
 )

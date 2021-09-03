@@ -2,6 +2,7 @@ package com.atittoapps.otchelper.filter
 
 import com.atitto.mviflowarch.base.BaseActor
 import com.atittoapps.domain.companies.CompaniesInteractor
+import com.atittoapps.otchelper.filter.sorting.toApp
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.map

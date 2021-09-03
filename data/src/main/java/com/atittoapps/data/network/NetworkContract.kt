@@ -8,7 +8,7 @@ object NetworkContract {
 
     const val COMPANY_INSIDE = "https://backend.otcmarkets.com/otcapi/stock/trade/inside/{symbol}"
 
-    const val GET_HISTORICAL_DATA = "https://finnhub.io/api/v1/stock/candle?&resolution=D"
+    const val GET_HISTORICAL_DATA = "https://finnhub.io/api/v1/stock/candle?resolution=D"
 
     const val GET_OTC_NEWS = "https://backend.otcmarkets.com/otcapi/company/{symbol}/dns/news?page=1&pageSize=30&sortOn=releaseDate&sortDir=DESC"
 
@@ -17,6 +17,8 @@ object NetworkContract {
     const val GET_SEC_REPORT = "https://backend.otcmarkets.com/otcapi/company/sec-filings/{symbol}?page=1&pageSize=50"
 
     const val SYMBOLS = "https://www.otcmarkets.com/data/symbols"
+
+    const val LEVELS = "https://finnhub.io/api/v1/scan/support-resistance?resolution=D"
 
     const val GET_REPORTS = "https://backend.otcmarkets.com/otcapi/company/{symbol}/financial-report?page=1&pageSize=50&statusId=A&sortOn=releaseDate&sortDir=DESC"
 

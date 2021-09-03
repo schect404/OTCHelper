@@ -1,11 +1,6 @@
 package com.atittoapps.domain.companies
 
-import com.atittoapps.domain.companies.model.DomainFilters
-import com.atittoapps.domain.companies.model.DomainOtcNews
-import com.atittoapps.domain.companies.model.DomainSecReport
-import com.atittoapps.domain.companies.model.DomainStock
-import com.atittoapps.domain.companies.model.DomainSymbols
-import com.atittoapps.domain.companies.model.SharesPage
+import com.atittoapps.domain.companies.model.*
 import kotlinx.coroutines.flow.Flow
 
 interface CompaniesRepository {
@@ -19,6 +14,8 @@ interface CompaniesRepository {
     fun filterCompanies(): Flow<List<DomainStock>>
 
     fun getOtcCompanyNews(stock: DomainStock): Flow<List<DomainOtcNews>>
+
+    fun getFullCompany(stock: DomainStock): Flow<DomainStock>
 
     fun getExternalCompanyNews(stock: DomainStock): Flow<List<DomainOtcNews>>
 
@@ -36,6 +33,8 @@ interface CompaniesRepository {
 
     fun addWatchlist(stock: DomainStock): Flow<DomainStock>
 
+    fun getLevels(stock: DomainStock): Flow<List<String>>
+
     fun removeFromWatchlist(stock: DomainStock): Flow<DomainStock>
 
     suspend fun storeNewFiltered(stocks: List<DomainStock>)
@@ -47,4 +46,8 @@ interface CompaniesRepository {
     fun getSymbols(): Flow<List<DomainSymbols>>
 
     fun getCompanyProfile(symbols: DomainSymbols): Flow<DomainStock>
+
+    fun updateCache(stocks: List<DomainStock>): Flow<Unit>
+
+    fun getAllIndustries(): List<Industry>
 }

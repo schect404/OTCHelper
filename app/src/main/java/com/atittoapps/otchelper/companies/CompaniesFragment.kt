@@ -9,16 +9,14 @@ import com.atittoapps.data.prefs.SharedPrefsProvider
 import com.atittoapps.otchelper.BR
 import com.atittoapps.otchelper.R
 import com.atittoapps.otchelper.base.BaseAppFragment
-import com.atittoapps.otchelper.base.paging
+import com.atittoapps.otchelper.common.DomainStockParcelable
+import com.atittoapps.otchelper.common.toParcel
 import com.atittoapps.otchelper.databinding.FragmentMainBinding
 import com.atittoapps.otchelper.databinding.ItemSkeletonBinding
 import com.atittoapps.otchelper.databinding.ItemStockBinding
 import com.atittoapps.otchelper.viewBinding
 import com.github.nitrico.lastadapter.LastAdapter
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.*
 import org.koin.android.ext.android.get
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import xyz.peridy.shimmerlayout.ShimmerGroup
@@ -69,7 +67,7 @@ class CompaniesFragment :
     }
 
     override fun intents() = merge(
-        flowOf(CompaniesContract.ViewIntent.InitialFilter),
+        flowOf(if(items.isNullOrEmpty()) CompaniesContract.ViewIntent.InitialFilter else null).take(1).filterNotNull(),
         flow.filterNotNull()
     )
 
@@ -85,6 +83,25 @@ class CompaniesFragment :
         items.update(state.items)
         if(state.shouldLoad) {
             flow.value = CompaniesContract.ViewIntent.LoadByFiltered(state.items.filterIsInstance<CompaniesItems.Stock>().map { it.domainStock })
+        } else {
+            CompaniesContract.ViewIntent.UpdateCache(state.items.filterIsInstance<CompaniesItems.Stock>().map { it.domainStock }).also {
+                if(!it.stocks.isNullOrEmpty()) flow.value = it
+            }
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        flow.value = null
+        val currentList = ArrayList(items.list().filterIsInstance<CompaniesItems.Stock>().map { it.domainStock }.map { it.toParcel() })
+        outState.putParcelableArrayList("items", currentList)
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        savedInstanceState?.let {
+
+            items.update(it.getParcelableArrayList<DomainStockParcelable>("items")?.map { it.toDomain() }?.map { CompaniesItems.Stock(it) } ?: listOf())
         }
     }
 

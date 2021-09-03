@@ -62,4 +62,19 @@
     <string name="search">Пошук</string>
     <string name="sound_of_notifications">Звук нотифікацій</string>
     <string name="possible_current">!Possible Current!</string>
+    <string name="not_compliant">Не відповідає фільтру по структурі акцій</string>
+    <string name="could_not_load_chart">Не вийшло завантажити графік</string>
+    <string name="support_resistance">Підтримка/Спротив</string>
+    <string name="levels">Рівні</string>
+    <string name="price_ascending">Ціна за зростанням</string>
+    <string name="price_descending">Ціна за спаданням</string>
+    <string name="market_ascending">Ринок за зростанням</string>
+    <string name="market_descending">Ринок за спаданням</string>
+    <string name="volume_ascending">Об\'єм за зростанням</string>
+    <string name="volume_descending">Об\'єм за спаданням</string>
+    <string name="sort_by">Сортувати За</string>
+    <string name="select_all">Вибрати Все</string>
+    <string name="select_industries">Вибрати Галузі</string>
+    <string name="unselect_all">Прибрати Виділення</string>
+    <string name="industries">Галузі</string>
 </resources>

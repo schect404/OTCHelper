@@ -3,8 +3,10 @@ package com.atittoapps.otchelper.common
 import android.content.Context
 import android.graphics.Paint
 import android.util.AttributeSet
+import android.view.View
 import android.widget.RelativeLayout
 import android.widget.TextView
+import android.widget.Toast
 import com.atittoapps.domain.companies.model.HistoricalDataItem
 import com.atittoapps.otchelper.MainApplication
 import com.atittoapps.otchelper.R
@@ -37,6 +39,17 @@ class BiggerChartView @JvmOverloads constructor(
             if(value.isNullOrEmpty()) return
             handleHistoricalData(value)
         }
+
+    var longClickListener: View.OnLongClickListener? = null
+    set(value) {
+        field = value
+        value?.let {
+            val candlesChart = findViewById<CandleStickChart>(R.id.candle_stick_chart)
+            val volumeChart = findViewById<BarChart>(R.id.volume_chart)
+            candlesChart.setOnLongClickListener(value)
+            volumeChart.setOnLongClickListener(value)
+        }
+    }
 
     init {
         inflate(context, R.layout.view_historical_chart_bigger, this)
@@ -139,7 +152,9 @@ class BiggerChartView @JvmOverloads constructor(
         val tvHigh = findViewById<TextView>(R.id.high)
         val tvLow = findViewById<TextView>(R.id.low)
         val tvVol = findViewById<TextView>(R.id.vol)
+        val tvDate = findViewById<TextView>(R.id.date)
 
+        tvDate.text = historicalData.getOrNull(index)?.date?.let { CompaniesBinding.getDate(it*1000) }
         CompaniesBinding.isActualMoreThanFirst(tvOpen, historicalData.getOrNull(index)?.open)
         CompaniesBinding.isActualMoreThanFirst(tvClose, historicalData.getOrNull(index)?.close)
         CompaniesBinding.isActualMoreThanFirst(tvHigh, historicalData.getOrNull(index)?.high)

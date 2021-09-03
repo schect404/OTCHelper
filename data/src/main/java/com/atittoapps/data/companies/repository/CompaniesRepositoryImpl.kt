@@ -1,63 +1,80 @@
 package com.atittoapps.data.companies.repository
 
+import android.content.Context
+import androidx.annotation.RawRes
+import com.atittoapps.data.R
 import com.atittoapps.data.companies.api.CompaniesApi
 import com.atittoapps.data.companies.conversions.toDomain
 import com.atittoapps.data.companies.dao.StocksDao
-import com.atittoapps.data.companies.model.CompanyDetails
-import com.atittoapps.data.companies.model.DbHistoricalData
-import com.atittoapps.data.companies.model.Stocks
-import com.atittoapps.data.companies.model.toData
-import com.atittoapps.data.companies.model.toDbStock
-import com.atittoapps.data.companies.model.toStringJson
-import com.atittoapps.data.companies.model.toWatchlist
+import com.atittoapps.data.companies.model.*
 import com.atittoapps.data.prefs.SharedPrefsProvider
 import com.atittoapps.domain.companies.CompaniesRepository
 import com.atittoapps.domain.companies.model.*
 import com.google.gson.Gson
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.delayEach
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flatMapConcat
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.retry
-import kotlinx.coroutines.flow.zip
+import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.runBlocking
-import java.lang.Exception
 import java.text.DecimalFormat
-import java.util.Calendar
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 class CompaniesRepositoryImpl(
     private val api: CompaniesApi,
     private val gson: Gson,
     private val stocksDao: StocksDao,
-    private val sharedPrefsProvider: SharedPrefsProvider
+    private val sharedPrefsProvider: SharedPrefsProvider,
+    private val context: Context
 ) : CompaniesRepository {
 
     private val format = DecimalFormat("##0.####")
 
+    private inline fun <reified T> readRawJson(@RawRes rawResId: Int): T {
+        context.resources.openRawResource(rawResId).bufferedReader().use {
+            return gson.fromJson<T>(it, object : TypeToken<T>() {}.type)
+        }
+    }
+
+    override fun getAllIndustries(): List<Industry> {
+        return readRawJson<List<DataIndustry>>(R.raw.industries).map { it.toDomain() }
+    }
+
     override fun getPrimaryFiltered() = flow {
         val filters = sharedPrefsProvider.getFilters()
-        val domainList = kotlinx.coroutines.withTimeoutOrNull(5000) {
-            val string = api.filterCompanies(
-                filters.priceRange.min,
-                filters.priceRange.max,
-                filters.minVolume,
-                filters.getMarketsString()
-            )
-            val parsed = gson.fromJson(string, Stocks::class.java)
-            parsed.stocks?.map { it.toDomain() } ?: listOf()
-        } ?: run { throw Exception() }
-        stocksDao.addToFiltered(domainList.map { it.toDbStock(gson) })
-        emit(domainList)
+        val lastUpdated = sharedPrefsProvider.getLastUpdated()
+        val now = Calendar.getInstance().timeInMillis
+        val change = (now - lastUpdated)
+        val currentList = stocksDao.getFullStocks().map { it.toDomain(gson) }
+        if (currentList.isNullOrEmpty() || ((change > 48 * 3600 * 1000) && (lastUpdated != 0)) || (lastUpdated == 0)) {
+            val domainList = kotlinx.coroutines.withTimeoutOrNull(5000) {
+                val string = api.filterCompanies(
+                    filters.priceRange.min,
+                    filters.priceRange.max,
+                    filters.minVolume,
+                    filters.getMarketsString(),
+                    filters.getIndustriesString().toString()
+                )
+                val parsed = gson.fromJson(string, Stocks::class.java)
+                parsed.stocks?.map { it.toDomain() } ?: listOf()
+            } ?: run { throw Exception() }
+            stocksDao.addToFiltered(domainList.map { it.toDbStock(gson) })
+            sharedPrefsProvider.putLastUpdated(now)
+            emit(domainList)
+        } else emit(currentList)
     }.catch {
         val dbData = stocksDao.getFullStocks().map { it.toDomain(gson) }
         if (dbData.isEmpty()) throw Exception("OTC Markets currently unavailable")
         emit(dbData)
+    }
+
+    override fun getLevels(stock: DomainStock) = flow {
+        val levels = api.getLevels(stock.symbol).levels ?: listOf()
+        emit(levels.map { format.format(it) })
+    }
+
+    override fun updateCache(stocks: List<DomainStock>) = flow {
+        stocksDao.removeAllFromFiltered()
+        stocksDao.addToFiltered(stocks.map { it.toDbStock(gson) })
+        emit(Unit)
     }
 
     override fun fetchPage(page: Int) = flow {
@@ -80,7 +97,9 @@ class CompaniesRepositoryImpl(
         it.copy(shares = it.shares.filter {
             it.isFullyAppropriate(
                 filters.shouldShowWithNoSharesNumberInformation,
-                filters.toDomainFilters().floatRange
+                filters.toDomainFilters().floatRange,
+                filters.toDomainFilters().sharesRange,
+                filters.toDomainFilters().asRange
             )
         })
     }.flatMapConcat {
@@ -161,12 +180,12 @@ class CompaniesRepositoryImpl(
     override fun getSecReports(stock: DomainStock) = flow {
         val reports = api.getSecReports(stock.symbol, stock.symbol).records?.map { it.toDomain() }
         emit(reports ?: listOf<DomainSecReport>())
-    }
+    }.catch { emit(listOf()) }
 
     override fun getOtcReports(stock: DomainStock) = flow {
         val reports = api.getOtcReports(stock.symbol, stock.symbol).records?.map { it.toDomain() }
         emit(reports ?: listOf<DomainSecReport>())
-    }
+    }.catch { emit(listOf()) }
 
     override fun filterCompanies() = flow {
         val filters = sharedPrefsProvider.getFilters()
@@ -187,10 +206,58 @@ class CompaniesRepositoryImpl(
             it.filter {
                 it.isFullyAppropriate(
                     filters.shouldShowWithNoSharesNumberInformation,
-                    filters.toDomainFilters().floatRange
+                    filters.toDomainFilters().floatRange,
+                    filters.toDomainFilters().sharesRange,
+                    filters.toDomainFilters().asRange
                 )
             }
         }
+
+    override fun getFullCompany(stock: DomainStock) =
+        getOneCompanyFullProfile(stock).map { profile ->
+            val favourites = stocksDao.getFullWatchlist().map { it.toDomain() }
+            val security = profile.securities?.firstOrNull()
+            stock.copy(
+                name = profile.name,
+                city = profile.city,
+                country = profile.country,
+                website = profile.website,
+                businessDesc = profile.businessDesc,
+                email = profile.email,
+                numberOfEmployees = profile.numberOfEmployees,
+                authorisedShares = security?.authorisedShares,
+                authorisedSharesAsOfDate = security?.authorisedSharesAsOfDate,
+                outstandingShares = security?.outstandingShares,
+                outstandingSharesAsOfDate = security?.outstandingSharesAsOfDate,
+                publicFloat = security?.publicFloat,
+                publicFloatAsOfDate = security?.publicFloatAsOfDate,
+                dtcShares = security?.dtcShares,
+                dtcSharesAsOfDate = security?.dtcSharesAsOfDate,
+                restrictedShares = security?.restrictedShares,
+                restrictedSharesAsOfDate = security?.restrictedSharesAsOfDate,
+                unrestrictedShares = security?.unrestrictedShares,
+                unrestrictedSharesAsOfDate = security?.unrestrictedSharesAsOfDate,
+                securityType = security?.typeName,
+                market = security?.tierName,
+                parValue = security?.parValue,
+                marketCap = profile?.estimatedMarketCap,
+                estimatedMarketCapAsOfDate = profile?.estimatedMarketCapAsOfDate,
+                isFavourite = favourites.firstOrNull { it.symbol == stock.symbol } != null,
+                officers = profile.officers?.map { DomainOfficer(it.name, it.title) }
+                    ?: listOf()
+            )
+        }.map {
+            val filters = sharedPrefsProvider.getFilters().toDomainFilters()
+            it.copy(
+                compliantToShareStructureFilter = it.isFullyAppropriate(
+                    filters.shouldShowWithNoSharesNumberInformation,
+                    filters.floatRange,
+                    filters.sharesRange,
+                    filters.asRange
+                )
+            )
+        }.retry(3)
+
 
     fun getCompanyFullProfile(stocks: List<DomainStock>) = flow {
         val listResult = arrayListOf<DomainStock>()
@@ -258,12 +325,12 @@ class CompaniesRepositoryImpl(
 
     override fun getHistoricalData(stock: DomainStock) = flow {
         val calendar = Calendar.getInstance()
-        val historicalData = kotlinx.coroutines.withTimeoutOrNull(5000) {
+        val historicalData = kotlinx.coroutines.withTimeoutOrNull(8000) {
             api.getHistoricalData(
                 stock.symbol,
                 TimeUnit.MILLISECONDS.toSeconds(calendar.timeInMillis - TimeUnit.DAYS.toMillis(180))
                     .toString(),
-                TimeUnit.MILLISECONDS.toSeconds(calendar.timeInMillis).toString()
+                (TimeUnit.MILLISECONDS.toSeconds(calendar.timeInMillis - TimeUnit.HOURS.toMillis(12))).toString()
             )
         }
         historicalData?.let {
@@ -344,6 +411,7 @@ class CompaniesRepositoryImpl(
         runBlocking {
             stocksDao.removeAllFromFiltered()
         }
+        sharedPrefsProvider.putLastUpdated(0)
         sharedPrefsProvider.putFilters(filters.toData())
         sharedPrefsProvider.putIsFirstTime(true)
     }

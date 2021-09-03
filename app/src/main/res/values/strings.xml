@@ -62,4 +62,19 @@
     <string name="search">Search</string>
     <string name="sound_of_notifications">Sound of Notifications</string>
     <string name="possible_current">!Possible Current!</string>
+    <string name="not_compliant">Not compliant to shares structure filter</string>
+    <string name="could_not_load_chart">Could not load chart</string>
+    <string name="support_resistance">Support/Resistance</string>
+    <string name="levels">Levels</string>
+    <string name="price_ascending">Price ascending</string>
+    <string name="price_descending">Price descending</string>
+    <string name="market_ascending">Market ascending</string>
+    <string name="market_descending">Market descending</string>
+    <string name="volume_ascending">Volume ascending</string>
+    <string name="volume_descending">Volume descending</string>
+    <string name="sort_by">Sort By</string>
+    <string name="select_all">Select All</string>
+    <string name="select_industries">Select Industries</string>
+    <string name="unselect_all">Unselect All</string>
+    <string name="industries">Industries</string>
 </resources>

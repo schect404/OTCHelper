@@ -13,7 +13,9 @@ data class HistoricalData(
     @SerializedName("l")
     val lows: List<Double> = listOf(),
     @SerializedName("v")
-    val volumes: List<Double> = listOf()
+    val volumes: List<Double> = listOf(),
+    @SerializedName("t")
+    val dates: List<Long> = listOf()
 ) {
 
     fun toDataItemList() =  opens?.mapIndexed { index, value ->
@@ -22,7 +24,8 @@ data class HistoricalData(
             close = closes?.get(index),
             high = highs?.get(index),
             low = lows?.get(index),
-            volume = volumes?.get(index)
+            volume = volumes?.get(index),
+            date = dates?.getOrNull(index) ?: 0
         )
     }
 

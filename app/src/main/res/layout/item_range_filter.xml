@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="item"
+            type="com.atittoapps.otchelper.filter.Filters.RangeShares" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginVertical="12dp">
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{item.title}"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Has account" />
+
+        <com.crystal.crystalrangeseekbar.widgets.CrystalRangeSeekbar
+            android:id="@+id/rangeSeekbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            app:layout_constraintTop_toBottomOf="@id/tvTitle"
+            app:left_thumb_color="?colorAccent"
+            app:right_thumb_color="?colorAccent"
+            android:layout_marginHorizontal="4dp"
+            app:bar_highlight_color="?colorAccent"
+            app:range="@{item}" />
+
+        <TextView
+            android:id="@+id/tvMin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@{item.min}"
+            app:layout_constraintStart_toStartOf="@id/rangeSeekbar"
+            app:layout_constraintTop_toBottomOf="@id/rangeSeekbar"
+            android:textSize="14sp"/>
+
+        <TextView
+            android:id="@+id/tvMax"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/rangeSeekbar"
+            app:layout_constraintEnd_toEndOf="@id/rangeSeekbar"
+            android:layout_marginTop="4dp"
+            android:textSize="14sp"
+            android:text="@{item.max}" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

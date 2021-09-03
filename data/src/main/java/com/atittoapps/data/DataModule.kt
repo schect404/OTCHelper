@@ -28,7 +28,7 @@ val dataModule = module {
 
     single { get<Retrofit>().create(CompaniesApi::class.java) }
 
-    single<CompaniesRepository> { CompaniesRepositoryImpl(get(), get(), get(), get()) }
+    single<CompaniesRepository> { CompaniesRepositoryImpl(get(), get(), get(), get(), get()) }
 
     single<SharedPrefsProvider> { SharedPrefsProviderImpl(androidApplication(), get()) }
 }

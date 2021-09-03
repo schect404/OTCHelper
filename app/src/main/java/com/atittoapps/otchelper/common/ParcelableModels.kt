@@ -7,6 +7,9 @@ import com.atittoapps.domain.companies.model.DomainOfficer
 import com.atittoapps.domain.companies.model.DomainStock
 import com.atittoapps.domain.companies.model.HistoricalDataItem
 import com.atittoapps.otchelper.R
+import com.crystal.crystalrangeseekbar.widgets.CrystalRangeSeekbar
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.parcelize.Parcelize
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -18,17 +21,18 @@ data class HistoricalDataItemParcelable(
     val close: Double,
     val high: Double,
     val low: Double,
-    val volume: Double
+    val volume: Double,
+    val date: Long
 ) : Parcelable {
 
     fun toDomain() = HistoricalDataItem(
-        open, close, high, low, volume
+        open, close, high, low, volume, date
     )
 
 }
 
 fun HistoricalDataItem.toParcel() = HistoricalDataItemParcelable(
-    open, close, high, low, volume
+    open, close, high, low, volume, date
 )
 
 @Parcelize
@@ -291,3 +295,19 @@ fun Double.getWithDelimiters(numAfterPoint: Int = 2): String {
 val formatter = SimpleDateFormat("dd.MM.yyyy")
 
 fun Long?.getDateString() = this?.let { formatter.format(Date(it)) }
+
+fun CrystalRangeSeekbar.rangeChanges() =
+    callbackFlow {
+        setOnRangeSeekbarChangeListener { minValue, maxValue ->
+            offer(minValue to maxValue)
+        }
+        awaitClose { setOnRangeSeekbarChangeListener(null) }
+    }
+
+fun CrystalRangeSeekbar.rangeApplies() =
+    callbackFlow {
+        setOnRangeSeekbarFinalValueListener { minValue, maxValue ->
+            offer(minValue to maxValue)
+        }
+        awaitClose { setOnRangeSeekbarFinalValueListener(null) }
+    }

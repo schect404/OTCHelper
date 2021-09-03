@@ -33,7 +33,7 @@ class FetcherWorker(val appContext: Context, workerParams: WorkerParameters) :
     override suspend fun doWork(): Result {
         createNotificationChannel()
         return try {
-            startTask()
+            //startTask()
             val favourites = interactor.getWatchlist(false).first()
             if(!favourites.isNullOrEmpty()) notifyAboutChanges(favourites)
             Result.success()
@@ -90,7 +90,7 @@ class FetcherWorker(val appContext: Context, workerParams: WorkerParameters) :
         }
 
         notificationManager.cancelAll()
-        notificationManager.notify( /*notification id*/1, notificationBuilder.build())
+        //notificationManager.notify( /*notification id*/1, notificationBuilder.build())
     }
 
     private fun notifyAboutChanges(watchlist: List<DomainStock>) {

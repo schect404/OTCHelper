@@ -62,4 +62,19 @@
     <string name="search">Поиск</string>
     <string name="sound_of_notifications">Звук нотификаций</string>
     <string name="possible_current">!Possible Current!</string>
+    <string name="not_compliant">Не соответствует фильтру по структуре акций</string>
+    <string name="could_not_load_chart">Не вышло загрузить график</string>
+    <string name="support_resistance">Поддержка/Сопротивление</string>
+    <string name="levels">Уровни</string>
+    <string name="price_ascending">Цена по возрастанию</string>
+    <string name="price_descending">Цена по убыванию</string>
+    <string name="market_ascending">Рынок по возрастанию</string>
+    <string name="market_descending">Рынок по убыванию</string>
+    <string name="volume_ascending">Объем по возрастанию</string>
+    <string name="volume_descending">Объем по убыванию</string>
+    <string name="sort_by">Сортировать По</string>
+    <string name="select_all">Выделить Все</string>
+    <string name="select_industries">Выберите Отрасли</string>
+    <string name="unselect_all">Убрать Выделения</string>
+    <string name="industries">Отрасли</string>
 </resources>

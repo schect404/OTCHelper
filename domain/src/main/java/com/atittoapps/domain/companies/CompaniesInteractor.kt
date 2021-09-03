@@ -1,11 +1,6 @@
 package com.atittoapps.domain.companies
 
-import com.atittoapps.domain.companies.model.DomainFilters
-import com.atittoapps.domain.companies.model.DomainOtcNews
-import com.atittoapps.domain.companies.model.DomainSecReport
-import com.atittoapps.domain.companies.model.DomainStock
-import com.atittoapps.domain.companies.model.DomainSymbols
-import com.atittoapps.domain.companies.model.SharesPage
+import com.atittoapps.domain.companies.model.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapConcat
@@ -49,6 +44,14 @@ interface CompaniesInteractor {
     fun getIsCurrentPossibleBasedOnReports(stock: DomainStock): Flow<DomainStock>
 
     fun getHistoricalData(stock: DomainStock): Flow<DomainStock>
+
+    fun getFullCompany(stock: DomainStock): Flow<DomainStock>
+
+    fun updateCache(stocks: List<DomainStock>): Flow<Unit>
+
+    fun getLevels(stock: DomainStock): Flow<List<String>>
+
+    fun getAllIndustries(): List<Industry>
 }
 
 class CompaniesInteractorImpl(
@@ -59,15 +62,31 @@ class CompaniesInteractorImpl(
         companiesRepository.fetchPage(page)
             .map { it.copy(shares = it.shares.sortedBy { it.lastSale }) }
 
+    override fun getAllIndustries() = companiesRepository.getAllIndustries()
+
     override fun getPrimaryFiltered() = companiesRepository.getPrimaryFiltered().map {
-        it.sortedBy { it.lastSale }
+        val currentSort = companiesRepository.getFilters().sortingBy
+        when(currentSort) {
+            SortingBy.PRICE_ASCENDING -> it.sortedBy { it.lastSale }
+            SortingBy.PRICE_DESCENDING -> it.sortedByDescending { it.lastSale }
+            SortingBy.MARKET_DESCENDING -> it.sortedByDescending { it.market }
+            SortingBy.MARKET_ASCENDING -> it.sortedBy { it.market }
+            SortingBy.VOLUME_DESCENDING -> it.sortedByDescending { it.volume }
+            SortingBy.VOLUME_ASCENDING -> it.sortedBy { it.volume }
+        }
     }
+
+    override fun updateCache(stocks: List<DomainStock>) = companiesRepository.updateCache(stocks)
+
+    override fun getFullCompany(stock: DomainStock) = companiesRepository.getFullCompany(stock)
 
     override fun getHistoricalData(stock: DomainStock) =
         companiesRepository.getHistoricalData(stock)
 
     override fun getIsCurrentPossibleBasedOnReports(stock: DomainStock) =
         companiesRepository.getIsCurrentPossibleBasedOnReports(stock)
+
+    override fun getLevels(stock: DomainStock) = companiesRepository.getLevels(stock)
 
     override fun filterCompanies() =
         companiesRepository.filterCompanies()

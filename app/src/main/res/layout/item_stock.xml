@@ -42,6 +42,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
                 android:orientation="horizontal"
+                visibleIfOrGone="@{item.domainStock.alreadyLoaded}"
                 app:layout_constraintTop_toBottomOf="@id/barrier">
 
                 <LinearLayout
@@ -69,7 +70,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    visibleIfOrGone="@{item.domainStock.compliantToShareStructureFilter}">
 
                     <TextView
                         android:layout_width="match_parent"
@@ -90,7 +92,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    visibleIfOrGone="@{item.domainStock.compliantToShareStructureFilter}">
 
                     <TextView
                         android:layout_width="match_parent"
@@ -104,6 +107,139 @@
                         android:gravity="center"
                         doubleValue="@{item.domainStock.openingPrice}"
                         android:textSize="18sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="@string/last_sale" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        doubleValue="@{item.domainStock.lastSale}"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/valuesContainerShimmer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:orientation="horizontal"
+                visibleIfOrGone="@{!item.domainStock.alreadyLoaded}"
+                app:layout_constraintTop_toBottomOf="@id/barrier">
+
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <xyz.peridy.shimmerlayout.ShimmerLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="20dp"
+                                android:gravity="center"
+                                android:background="@drawable/shimmer_background"/>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="20dp"
+                                android:gravity="center"
+                                android:background="@drawable/shimmer_background"/>
+
+                        </LinearLayout>
+
+                    </xyz.peridy.shimmerlayout.ShimmerLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <xyz.peridy.shimmerlayout.ShimmerLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="20dp"
+                                android:gravity="center"
+                                android:background="@drawable/shimmer_background"/>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="20dp"
+                                android:gravity="center"
+                                android:background="@drawable/shimmer_background"/>
+
+                        </LinearLayout>
+
+                    </xyz.peridy.shimmerlayout.ShimmerLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <xyz.peridy.shimmerlayout.ShimmerLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="20dp"
+                                android:gravity="center"
+                                android:background="@drawable/shimmer_background"/>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="20dp"
+                                android:gravity="center"
+                                android:background="@drawable/shimmer_background"/>
+
+                        </LinearLayout>
+
+                    </xyz.peridy.shimmerlayout.ShimmerLayout>
 
                 </LinearLayout>
 
@@ -203,6 +339,46 @@
                 android:minHeight="56dp"
                 app:layout_constraintTop_toBottomOf="@id/valuesContainer"
                 android:layout_marginTop="2dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/valuesContainer"
+                android:text="@string/could_not_load_chart"
+                android:textSize="16sp"
+                android:textColor="?colorError"
+                android:gravity="center"
+                android:textStyle="bold"
+                visibleIfOrGone="@{item.domainStock.chartCouldNotLoad}"/>
+
+        <xyz.peridy.shimmerlayout.ShimmerLayout
+            android:id="@+id/itemShimmer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/valuesContainerShimmer"
+            android:layout_marginTop="4dp"
+            visibleIfOrGone="@{!item.domainStock.alreadyLoaded}">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="26dp"
+                android:background="@drawable/shimmer_background" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="26dp"
+                    android:layout_marginTop="4dp"
+                    android:background="@drawable/shimmer_background" />
+
+            </LinearLayout>
+
+
+        </xyz.peridy.shimmerlayout.ShimmerLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -1,22 +1,11 @@
 package com.atittoapps.otchelper.companies
 
+import android.util.Log
 import com.atitto.mviflowarch.base.BaseActor
 import com.atittoapps.data.prefs.SharedPrefsProvider
 import com.atittoapps.domain.companies.CompaniesInteractor
 import com.atittoapps.domain.companies.model.DomainStock
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flatMapConcat
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.merge
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.zip
+import kotlinx.coroutines.flow.*
 
 class CompaniesActor(
     private val interactor: CompaniesInteractor,
@@ -28,6 +17,7 @@ class CompaniesActor(
     override fun Flow<CompaniesContract.ViewIntent>.handleIntent(): Flow<CompaniesContract.PartialChange> {
 
         val initialFlow = filterIsInstance<CompaniesContract.ViewIntent.LoadPage>()
+            .take(1)
             .flatMapConcat {
                 val page = viewState?.value?.nextPage
                 if (page == null) flowOf(CompaniesContract.PartialChange.RemoveSkeleton)
@@ -52,7 +42,9 @@ class CompaniesActor(
             }
 
         val primaryFilter = filterIsInstance<CompaniesContract.ViewIntent.InitialFilter>()
-            .flatMapConcat { interactor.getPrimaryFiltered() }
+                .take(1)
+                .onEach { Log.e("TAG_OTC", "CompaniesContract.ViewIntent.InitialFilter") }
+            .flatMapConcat { interactor.getPrimaryFiltered().runWithoutProgress() }
             .map<List<DomainStock>, CompaniesContract.PartialChange> { CompaniesContract.PartialChange.PrimaryLoaded(it) }
             .onStart { emit(CompaniesContract.PartialChange.LoadedSkeleton) }
 
@@ -61,15 +53,25 @@ class CompaniesActor(
             .flatMapConcat { stocks ->
                 flow {
                     stocks.forEach {
-                        val stock = interactor.getHistoricalData(it).zip(interactor.getIsCurrentPossibleBasedOnReports(it)) { stock1, stock2 ->
-                            stock2.copy(historicalData = stock1.historicalData)
-                        }.first()
-                        emit(stock)
+                        val fullProfile = interactor.getFullCompany(it.copy(alreadyFiltered = true)).runWithoutProgress().first()
+                        if(!fullProfile.compliantToShareStructureFilter) emit(CompaniesContract.PartialChange.ItemRemoved(fullProfile.copy(alreadyLoaded = true)))
+                        else {
+                            val stock = interactor.getHistoricalData(fullProfile).zip(interactor.getIsCurrentPossibleBasedOnReports(fullProfile)) { stock1, stock2 ->
+                                stock2.copy(historicalData = stock1.historicalData,
+                                        previousClose = stock1.historicalData.lastOrNull()?.close,
+                                        openingPrice = stock1.historicalData.lastOrNull()?.open)
+                            }.first()
+                            emit(CompaniesContract.PartialChange.ItemLoaded(stock))
+                        }
                     }
-                }
-            }.map {
-                CompaniesContract.PartialChange.ItemLoaded(it)
+                }.runWithoutProgress()
             }
+
+        val updateFlow = filterIsInstance<CompaniesContract.ViewIntent.UpdateCache>()
+                .onEach { Log.e("TAG_OTC", "CompaniesContract.ViewIntent.UpdateCache") }
+                .flatMapConcat {
+                    interactor.updateCache(it.stocks)
+                }.map { CompaniesContract.PartialChange.Stub }
 
         val addToWatchlistFlow = filterIsInstance<CompaniesContract.ViewIntent.AddToWatchList>()
             .flatMapConcat { interactor.addWatchlist(it.stock).runWithProgress() }
@@ -85,7 +87,8 @@ class CompaniesActor(
             addToWatchlistFlow,
             removeFromWatchlistFlow,
             primaryFilter,
-            loadByItemFlow
+            loadByItemFlow,
+                updateFlow
         )
     }
 

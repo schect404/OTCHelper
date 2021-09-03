@@ -16,6 +16,7 @@ interface CompaniesContract {
         object InitialNotFirst : ViewIntent()
         class AddToWatchList(val stock: DomainStock) : ViewIntent()
         class RemoveFromWatchList(val stock: DomainStock) : ViewIntent()
+        class UpdateCache(val stocks: List<DomainStock>) : ViewIntent()
     }
 
     sealed class ModelIntent : BaseModelIntent {
@@ -56,10 +57,16 @@ interface CompaniesContract {
                 initialState.copy(
                     items = initialState.items.map {
                         if ((it as? CompaniesItems.Stock)?.domainStock?.symbol == item.symbol) CompaniesItems.Stock(
-                            item
+                            item.copy(alreadyLoaded = true)
                         ) else it
                     }, shouldLoad = false
                 )
+        }
+
+        class ItemRemoved(val item: DomainStock): PartialChange() {
+            override fun reduceToState(initialState: ViewState) = initialState.copy(
+                    items = initialState.items.filterNot { (it as? CompaniesItems.Stock)?.domainStock?.let {  it.symbol == item.symbol } ?: true }
+            )
         }
 
         object LoadedSkeleton : PartialChange() {

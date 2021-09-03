@@ -138,7 +138,9 @@ class ChartView @JvmOverloads constructor(
         val tvHigh = findViewById<TextView>(R.id.high)
         val tvLow = findViewById<TextView>(R.id.low)
         val tvVol = findViewById<TextView>(R.id.vol)
+        val tvDate = findViewById<TextView>(R.id.date)
 
+        tvDate.text = historicalData.getOrNull(index)?.date?.let { CompaniesBinding.getDate(it*1000) }
         CompaniesBinding.isActualMoreThanFirst(tvOpen, historicalData.getOrNull(index)?.open)
         CompaniesBinding.isActualMoreThanFirst(tvClose, historicalData.getOrNull(index)?.close)
         CompaniesBinding.isActualMoreThanFirst(tvHigh, historicalData.getOrNull(index)?.high)
@@ -151,7 +153,7 @@ class ChartView @JvmOverloads constructor(
         if (value < 0f) return ""
         if (value >= 1000000000) return "${value / 1000000000}B"
         if (value >= 1000000) return "${(value / 1000000).roundToInt()}M"
-        if (value >= 1000) return "{${(value / 1000).roundToInt()}K}"
+        if (value >= 1000) return "${(value / 1000).roundToInt()}K"
         return value.roundToInt().toString()
     }
 

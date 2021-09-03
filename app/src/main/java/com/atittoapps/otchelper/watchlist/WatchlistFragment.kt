@@ -1,5 +1,6 @@
 package com.atittoapps.otchelper.watchlist
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -11,6 +12,8 @@ import com.atittoapps.otchelper.BR
 import com.atittoapps.otchelper.R
 import com.atittoapps.otchelper.base.BaseAppFragment
 import com.atittoapps.otchelper.base.SwipeToDeleteCallback
+import com.atittoapps.otchelper.chart.ChartActivity
+import com.atittoapps.otchelper.common.toParcel
 import com.atittoapps.otchelper.databinding.FragmentMainBinding
 import com.atittoapps.otchelper.databinding.ItemWatchlistBinding
 import com.atittoapps.otchelper.viewBinding
@@ -39,11 +42,16 @@ class WatchlistFragment :
 
     private val adapter = LastAdapter(items, BR.item)
         .map<DomainStock, ItemWatchlistBinding>(R.layout.item_watchlist) {
-            onCreate { holder ->
-                holder.binding.item?.let { stock ->
-                    holder.binding.tvSymbol.setOnClickListener {
-                        navigator.goDetails(stock, activity?.supportFragmentManager ?: requireFragmentManager())
-                    }
+//            onCreate { holder ->
+//                holder.binding.item?.let { stock ->
+//                    holder.binding.tvSymbol.setOnClickListener {
+//                        navigator.goDetails(stock, activity?.supportFragmentManager ?: requireFragmentManager())
+//                    }
+//                }
+//            }
+            onClick {
+                it.binding.item?.let { stock ->
+                    navigator.goDetails(stock, activity?.supportFragmentManager ?: requireFragmentManager())
                 }
             }
         }

@@ -18,6 +18,7 @@ abstract class CompaniesNavigator : BaseNavigator(R.id.main_fragments_container)
 class CompaniesNavigatorImpl : CompaniesNavigator() {
 
     override fun goDetails(stock: DomainStock, fragmentManager: FragmentManager) {
+        if (stock.alreadyLoaded.not()) return
         fragmentManager.goWithAnimationAndBack(CompanyDetailsFragment.newInstance(stock))
     }
 

@@ -77,13 +77,16 @@ class OtcNewsFragment :
     }
 
     private fun goUrl(news: DomainOtcNews) {
+        val uri = if (isExternal) news.getExternalNewsUrl(
+                stock?.symbol ?: ""
+        ) else news.getNewsUrl(stock?.symbol ?: "")
+
+        if(uri.isNullOrEmpty()) return
         val browserIntent =
             Intent(
                 Intent.ACTION_VIEW,
                 Uri.parse(
-                    if (isExternal) news.getExternalNewsUrl(
-                        stock?.symbol ?: ""
-                    ) else news.getNewsUrl(stock?.symbol ?: "")
+                    uri
                 )
             )
         startActivity(browserIntent)
