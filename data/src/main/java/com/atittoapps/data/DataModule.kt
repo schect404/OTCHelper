@@ -19,7 +19,7 @@ import retrofit2.Retrofit
 val dataModule = module {
     single<Gson> { GsonBuilder().setLenient().create() }
     single { OkHttpClient() }
-    single<RetrofitFactory> { RetrofitFactoryImpl(get()) }
+    single<RetrofitFactory> { RetrofitFactoryImpl(get(), get()) }
     single<Retrofit> { get<RetrofitFactory>().createRetrofit(get()) }
 
     single { Room.databaseBuilder(androidApplication(), Database::class.java, "stocks-db").fallbackToDestructiveMigration().build() }

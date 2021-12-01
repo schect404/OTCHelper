@@ -1,6 +1,7 @@
 package com.atittoapps.otchelper.filter
 
 import com.atittoapps.domain.companies.model.Industry
+import com.atittoapps.domain.companies.model.Market
 import com.atittoapps.domain.companies.model.SortingBy
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel
@@ -19,6 +20,10 @@ class FiltersUpdateDelegate {
 
     val updateIndustry = updateIndustriesChannel.asFlow()
 
+    private val updateMarketsChannel = BroadcastChannel<List<Market>>(capacity = Channel.CONFLATED)
+
+    val updateMarkets = updateMarketsChannel.asFlow()
+
     val updateFlow = MutableStateFlow<Unit?>(null)
 
     fun update() {
@@ -32,5 +37,9 @@ class FiltersUpdateDelegate {
 
     suspend fun updateIndustries(industries: List<Industry>) {
         updateIndustriesChannel.send(industries)
+    }
+
+    suspend fun updateMarkets(markets: List<Market>) {
+        updateMarketsChannel.send(markets)
     }
 }

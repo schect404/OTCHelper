@@ -3,6 +3,7 @@ package com.atittoapps.otchelper.details.reports.sec
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.provider.Browser
 import android.view.View
 import com.atitto.mviflowarch.extensions.attachAdapter
 import com.atitto.mviflowarch.list.AsyncObservableList
@@ -77,7 +78,6 @@ class ReportsFragment :
     }
 
     private fun goUrl(report: DomainSecReport) {
-        if(isSec && report.filedAsHtml == false) return
         val browserIntent =
             Intent(
                 Intent.ACTION_VIEW,
@@ -85,6 +85,11 @@ class ReportsFragment :
                     if (isSec) report.getUrl() else report.getUrlOtc()
                 )
             )
+        val headersBundle = Bundle().apply {
+            putString("Origin", "https://www.otcmarkets.com")
+            putString("Referer","https://www.otcmarkets.com/")
+        }
+        browserIntent.putExtra(Browser.EXTRA_HEADERS, headersBundle);
         startActivity(browserIntent)
     }
 

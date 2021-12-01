@@ -77,4 +77,5 @@
     <string name="select_industries">Select Industries</string>
     <string name="unselect_all">Unselect All</string>
     <string name="industries">Industries</string>
+    <string name="select_markets">Select Markets</string>
 </resources>

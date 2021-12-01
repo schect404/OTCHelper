@@ -77,4 +77,5 @@
     <string name="select_industries">Выберите Отрасли</string>
     <string name="unselect_all">Убрать Выделения</string>
     <string name="industries">Отрасли</string>
+    <string name="select_markets">Выберите Рынки</string>
 </resources>

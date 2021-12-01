@@ -19,14 +19,13 @@ class DetailsViewPagerAdapter(
 ) :
     FragmentStatePagerAdapter(fragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
 
-    override fun getCount() = 6
+    override fun getCount() = 5
 
     override fun getItem(position: Int) = when (position) {
         0 -> CompanyProfileFragment.newInstance(stock)
         1 -> CompanySecurityDetailsFragment.newInstance(stock)
         2 -> CompanyNewsFragment.newInstance(stock)
         3 -> CompanyReportsFragment.newInstance(stock)
-        4 -> LevelsFragment.newInstance(stock)
         else -> LinksFragment.newInstance(stock)
     }
 
@@ -35,7 +34,6 @@ class DetailsViewPagerAdapter(
         1 -> context.getString(R.string.security)
         2 -> context.getString(R.string.news)
         3 -> context.getString(R.string.reports)
-        4 -> context.getString(R.string.levels)
         else -> context.getString(R.string.links)
     }
 }

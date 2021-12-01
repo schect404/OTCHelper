@@ -52,6 +52,8 @@ interface CompaniesInteractor {
     fun getLevels(stock: DomainStock): Flow<List<String>>
 
     fun getAllIndustries(): List<Industry>
+
+    fun getAllMarkets(): List<Market>
 }
 
 class CompaniesInteractorImpl(
@@ -63,6 +65,8 @@ class CompaniesInteractorImpl(
             .map { it.copy(shares = it.shares.sortedBy { it.lastSale }) }
 
     override fun getAllIndustries() = companiesRepository.getAllIndustries()
+
+    override fun getAllMarkets() = companiesRepository.getAllMarkets()
 
     override fun getPrimaryFiltered() = companiesRepository.getPrimaryFiltered().map {
         val currentSort = companiesRepository.getFilters().sortingBy

@@ -50,4 +50,6 @@ interface CompaniesRepository {
     fun updateCache(stocks: List<DomainStock>): Flow<Unit>
 
     fun getAllIndustries(): List<Industry>
+
+    fun getAllMarkets(): List<Market>
 }

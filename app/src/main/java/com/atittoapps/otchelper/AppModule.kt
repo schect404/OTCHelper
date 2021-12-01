@@ -11,6 +11,7 @@ import com.atittoapps.otchelper.filter.FiltersNavigator
 import com.atittoapps.otchelper.filter.FiltersNavigatorImpl
 import com.atittoapps.otchelper.filter.FiltersUpdateDelegate
 import com.atittoapps.otchelper.filter.industries.IndustriesActor
+import com.atittoapps.otchelper.filter.markets.MarketsActor
 import com.atittoapps.otchelper.search.SearchActor
 import com.atittoapps.otchelper.search.SearchNavigator
 import com.atittoapps.otchelper.search.SearchNavigatorImpl
@@ -30,6 +31,7 @@ val appModule = module {
     viewModel { SearchActor(get()) }
     viewModel { LevelsActor(get()) }
     viewModel { IndustriesActor(get()) }
+    viewModel { MarketsActor(get()) }
     single { FiltersUpdateDelegate() }
     factory<CompaniesNavigator> { CompaniesNavigatorImpl() }
     factory<SearchNavigator> { SearchNavigatorImpl() }

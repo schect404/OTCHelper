@@ -38,6 +38,10 @@ class CompaniesRepositoryImpl(
         return readRawJson<List<DataIndustry>>(R.raw.industries).map { it.toDomain() }
     }
 
+    override fun getAllMarkets(): List<Market> {
+        return readRawJson<List<DataMarket>>(R.raw.markets).map { it.toDomain() }
+    }
+
     override fun getPrimaryFiltered() = flow {
         val filters = sharedPrefsProvider.getFilters()
         val lastUpdated = sharedPrefsProvider.getLastUpdated()
@@ -45,17 +49,16 @@ class CompaniesRepositoryImpl(
         val change = (now - lastUpdated)
         val currentList = stocksDao.getFullStocks().map { it.toDomain(gson) }
         if (currentList.isNullOrEmpty() || ((change > 48 * 3600 * 1000) && (lastUpdated != 0)) || (lastUpdated == 0)) {
-            val domainList = kotlinx.coroutines.withTimeoutOrNull(5000) {
+
                 val string = api.filterCompanies(
                     filters.priceRange.min,
                     filters.priceRange.max,
                     filters.minVolume,
-                    filters.getMarketsString(),
+                    filters.getMarketsString(getAllMarkets().map { it.toData() }),
                     filters.getIndustriesString().toString()
                 )
                 val parsed = gson.fromJson(string, Stocks::class.java)
-                parsed.stocks?.map { it.toDomain() } ?: listOf()
-            } ?: run { throw Exception() }
+                val domainList = parsed.stocks?.map { it.toDomain() } ?: listOf()
             stocksDao.addToFiltered(domainList.map { it.toDbStock(gson) })
             sharedPrefsProvider.putLastUpdated(now)
             emit(domainList)
@@ -83,7 +86,7 @@ class CompaniesRepositoryImpl(
             filters.priceRange.min,
             filters.priceRange.max,
             filters.minVolume,
-            filters.getMarketsString()
+            filters.getMarketsString(getAllMarkets().map { it.toData() })
         )
         val parsed = gson.fromJson(string, Stocks::class.java)
         val domainList = parsed.toDomain(page)
@@ -193,7 +196,7 @@ class CompaniesRepositoryImpl(
             filters.priceRange.min,
             filters.priceRange.max,
             filters.minVolume,
-            filters.getMarketsString()
+            filters.getMarketsString(getAllMarkets().map { it.toData() })
         )
         val parsed = gson.fromJson(string, Stocks::class.java)
         val domainList = parsed.toDomain().shares ?: listOf()
@@ -305,9 +308,9 @@ class CompaniesRepositoryImpl(
     fun getOneCompanyFullProfile(stock: DomainStock) = flow {
         val profile = api.getCompanyFullProfile(stock.symbol, stock.symbol)
         emit(profile)
-    }.delayEach(100).catch {
+    }.delayEach(400).catch {
         emit(CompanyDetails(null))
-    }
+    }.retry(3)
 
     override fun getCompaniesInside(stock: DomainStock) = flow {
         val inside = api.getCompanyInside(stock.symbol, stock.symbol)

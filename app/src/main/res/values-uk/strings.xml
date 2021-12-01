@@ -77,4 +77,5 @@
     <string name="select_industries">Вибрати Галузі</string>
     <string name="unselect_all">Прибрати Виділення</string>
     <string name="industries">Галузі</string>
+    <string name="select_markets">Вибрати Ринки</string>
 </resources>

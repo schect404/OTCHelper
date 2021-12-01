@@ -256,6 +256,14 @@ class FiltersFragment :
                 )
             }
         }
+            .map<Filters.Markets, ItemFilterMarketBinding>(R.layout.item_filter_market) {
+                onClick {
+                    navigator.goMarkets(
+                            it.binding.item?.markets ?: listOf(),
+                            activity?.supportFragmentManager ?: requireFragmentManager()
+                    )
+                }
+            }
         .map<Filters.PushesSound, ItemPushesSoundSettingBinding>(R.layout.item_pushes_sound_setting) {
             onCreate {
                 it.binding.scChecked.setOnCheckedChangeListener { buttonView, isChecked ->
@@ -319,6 +327,18 @@ class FiltersFragment :
                         flow.value = FiltersContract.ViewIntent.FiltersChanged(it)
                     }
                 }.collect()
+        }
+
+        lifecycleScope.launchWhenStarted {
+            filtersUpdateDelegate.updateMarkets
+                    .onEach {
+                        it ?: return@onEach
+                        items.list().filterIsInstance<Filters.Markets>().firstOrNull()?.copy(
+                                markets = it
+                        )?.let {
+                            flow.value = FiltersContract.ViewIntent.FiltersChanged(it)
+                        }
+                    }.collect()
         }
     }
 

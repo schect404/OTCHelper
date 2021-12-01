@@ -16,7 +16,7 @@ data class DomainSecReport(
     }
 
     fun getUrlOtc() = id?.let {
-        "https://backend.otcmarkets.com/otcapi/company/financial-report/%s/content".format(it)
+        "http://docs.google.com/viewer?url=https://otcmarkets.com/otcapi/company/financial-report/%s/content".format(it)
     }
 
     fun getDate() = receivedDate.getDateString()

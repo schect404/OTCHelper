@@ -12,7 +12,8 @@ data class DomainFilters(
     val sortingBy: SortingBy = SortingBy.PRICE_ASCENDING,
     val industries: List<Industry> = listOf(),
     val sharesRange: DomainRange<Int> = DomainRange<Int>(0, 100),
-    val asRange: DomainRange<Long> = DomainRange(100000, 15000000000)
+    val asRange: DomainRange<Long> = DomainRange(100000, 15000000000),
+    val markets: List<Market> = listOf()
 )
 
 data class DomainRange<T>(
